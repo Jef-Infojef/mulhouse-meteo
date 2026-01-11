@@ -1,0 +1,25 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_DIRECT_URL")
+}
+
+model WeatherHistory {
+  id          String   @id @default(cuid())
+  location    String
+  day         Int
+  month       Int
+  year        Int
+  tempMax     Float
+  tempMin     Float
+  weatherCode Int
+  createdAt   DateTime @default(now())
+
+  @@unique([location, day, month, year])
+  @@index([location])
+  @@index([day, month])
+}
