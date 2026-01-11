@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTheme } from "next-themes";
 import { ForecastData, HistoryData, SunMoonData } from "@/types/weather";
 import CurrentWeatherCard from "@/components/CurrentWeather";
 import HourlyForecast from "@/components/HourlyForecast";
@@ -8,8 +9,7 @@ import DailyForecast from "@/components/DailyForecast";
 import SunMoon from "@/components/SunMoon";
 import WeatherHistory from "@/components/WeatherHistory";
 import AtmoAlert from "@/components/AtmoAlert";
-import ThemeToggle from "@/components/ThemeToggle";
-import { RefreshCw, MapPin, Calendar, Clock, X } from "lucide-react";
+import { RefreshCw, Calendar, Clock, X, Cloud, Sun, Moon, CloudRain } from "lucide-react";
 
 export default function Home() {
   const [forecast, setForecast] = useState<ForecastData | null>(null);
@@ -20,6 +20,8 @@ export default function Home() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [error, setError] = useState<string | null>(null);
   const [showHistory, setShowHistory] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const { theme, setTheme, resolvedTheme } = useTheme();
 
   const fetchData = async () => {
     try {
@@ -49,6 +51,7 @@ export default function Home() {
   };
 
   useEffect(() => {
+    setMounted(true);
     fetchData();
 
     // Mettre à jour l'heure chaque seconde
@@ -100,107 +103,116 @@ export default function Home() {
     );
   }
 
+  const getWeatherIcon = (code: number) => {
+    if (code === 0 || code === 1) return <Sun size={14} className="text-yellow-500" />;
+    if (code === 2 || code === 3) return <Cloud size={14} className="text-gray-400" />;
+    if (code >= 45 && code <= 67) return <CloudRain size={14} className="text-blue-500" />;
+    return <Cloud size={14} className="text-gray-400" />;
+  };
+
   return (
     <main className="min-h-screen">
-      {/* Header */}
-      <header className="bg-white dark:bg-gray-900 border-b-2 border-blue-200 dark:border-gray-800 sticky top-0 z-50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Barre d'info */}
-          <div className="flex items-center justify-between py-2 text-sm border-b border-gray-200 dark:border-gray-800">
-            <div className="flex items-center gap-4 text-gray-700 dark:text-gray-400">
-              <div className="flex items-center gap-1">
-                <Calendar size={14} />
-                <span className="hidden sm:inline">{formatDate(currentTime)}</span>
-                <span className="sm:hidden">
-                  {currentTime.toLocaleDateString("fr-FR", {
-                    day: "numeric",
-                    month: "short",
-                  })}
-                </span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Clock size={14} />
-                <span>{formatTime(currentTime)}</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handleRefresh}
-                disabled={refreshing}
-                className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                aria-label="Rafraîchir"
-              >
-                <RefreshCw
-                  size={16}
-                  className={`text-gray-500 ${refreshing ? "animate-spin" : ""}`}
-                />
-              </button>
-              <ThemeToggle />
-            </div>
+      {/* TOP BAR - Info Bar */}
+      <div className="w-full bg-gray-100/50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-800 py-2 sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-2 text-[10px] sm:text-sm font-medium text-gray-600 dark:text-gray-400">
+          <div className="flex items-center gap-1.5 capitalize">
+            <Calendar size={14} className="text-blue-600 shrink-0" />
+            <span className="whitespace-nowrap">
+              {mounted ? currentTime.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : '...'}
+            </span>
           </div>
-
-          {/* Titre */}
-          <div className="py-4">
-            <div className="flex items-center gap-2">
-              <MapPin size={28} className="text-blue-600 dark:text-blue-400" />
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                Mulhouse Météo
-              </h1>
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="flex items-center gap-1.5 sm:border-l border-gray-300 dark:border-gray-700 sm:pl-4">
+              <Clock size={14} className="text-blue-600 shrink-0" />
+              <span>{mounted ? currentTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '...'}</span>
             </div>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 ml-9">
-              Prévisions en temps réel et archives historiques depuis 1940
-            </p>
+
+            {forecast && (
+              <div className="flex items-center gap-1.5 border-l border-gray-300 dark:border-gray-700 pl-3 sm:pl-4">
+                {getWeatherIcon(forecast.current.conditionCode)}
+                <span className="font-bold text-gray-900 dark:text-white">{Math.round(forecast.current.temperature)}°C</span>
+              </div>
+            )}
+
+            {mounted && (
+              <button
+                onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+                className="flex items-center justify-center p-1.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm"
+                aria-label="Toggle dark mode"
+              >
+                {resolvedTheme === 'dark' ? <Sun size={14} className="text-yellow-500" /> : <Moon size={14} className="text-blue-600" />}
+              </button>
+            )}
           </div>
         </div>
-      </header>
+      </div>
 
-      {/* Contenu principal */}
-      <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6 py-3 pb-20">
-        {error && (
-          <div className="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 p-3 rounded-lg mb-3 text-sm">
-            {error}
+      {/* HEADER PRINCIPAL */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <header className="mb-8 sm:mb-10 py-6">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="inline-flex items-center justify-center p-2.5 sm:p-3 bg-blue-600 rounded-full shadow-lg shadow-blue-200 dark:shadow-blue-900/50">
+              <Cloud className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
+            </div>
+            <div>
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+                Mulhouse Météo
+              </h1>
+              <p className="text-sm sm:text-lg text-gray-600 dark:text-gray-400 max-w-2xl">
+                Prévisions en temps réel et archives historiques depuis 1940
+              </p>
+            </div>
           </div>
-        )}
+        </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-          {/* Météo actuelle - compacte */}
-          <div className="md:col-span-1">
+        {/* Contenu principal */}
+        <div className="py-6 pb-24">
+          {error && (
+            <div className="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 p-3 rounded-lg mb-3 text-sm">
+              {error}
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+            {/* Météo actuelle - compacte */}
+            <div className="md:col-span-1">
             {forecast && (
               <CurrentWeatherCard
                 data={forecast.current}
                 todayMinMax={forecast.todayMinMax}
               />
-            )}
-          </div>
+              )}
+            </div>
 
-          {/* Soleil & Lune */}
-          <div className="md:col-span-1">
-            {sunMoon && <SunMoon data={sunMoon} />}
-          </div>
+            {/* Soleil & Lune */}
+            <div className="md:col-span-1">
+              {sunMoon && <SunMoon data={sunMoon} />}
+            </div>
 
-          {/* Prévisions horaires */}
-          <div className="md:col-span-2 lg:col-span-2">
-            {forecast && <HourlyForecast data={forecast.hourly} />}
-          </div>
+            {/* Prévisions horaires */}
+            <div className="md:col-span-2 lg:col-span-2">
+              {forecast && <HourlyForecast data={forecast.hourly} />}
+            </div>
 
-          {/* Prévisions 10 jours */}
-          <div className="md:col-span-2 lg:col-span-4">
-            {forecast && <DailyForecast data={forecast.daily} />}
-          </div>
+            {/* Prévisions 10 jours */}
+            <div className="md:col-span-2 lg:col-span-4">
+              {forecast && <DailyForecast data={forecast.daily} />}
+            </div>
 
-          {/* Qualité de l'air */}
-          <div className="md:col-span-2 lg:col-span-4">
-            <AtmoAlert />
-          </div>
+            {/* Qualité de l'air */}
+            <div className="md:col-span-2 lg:col-span-4">
+              <AtmoAlert />
+            </div>
 
-          {/* Bouton historique */}
-          <div className="md:col-span-2 lg:col-span-4">
+            {/* Bouton historique */}
+            <div className="md:col-span-2 lg:col-span-4">
             <button
               onClick={() => setShowHistory(true)}
               className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors"
             >
               📊 Voir l'historique des 85 années
-            </button>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -228,9 +240,9 @@ export default function Home() {
       )}
 
       {/* Footer */}
-      <footer className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t-2 border-blue-200 dark:border-gray-800 shadow-lg">
-        <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6 py-2">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+      <footer className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-[10px] sm:text-sm text-gray-500 dark:text-gray-400">
             <p>
               &copy; {new Date().getFullYear()} Mulhouse Météo. Données:{" "}
               <a
