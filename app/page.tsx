@@ -8,7 +8,7 @@ import DailyForecast from "@/components/DailyForecast";
 import SunMoon from "@/components/SunMoon";
 import WeatherHistory from "@/components/WeatherHistory";
 import ThemeToggle from "@/components/ThemeToggle";
-import { RefreshCw, MapPin, Calendar, Clock } from "lucide-react";
+import { RefreshCw, MapPin, Calendar, Clock, X } from "lucide-react";
 
 export default function Home() {
   const [forecast, setForecast] = useState<ForecastData | null>(null);
@@ -18,6 +18,7 @@ export default function Home() {
   const [refreshing, setRefreshing] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [error, setError] = useState<string | null>(null);
+  const [showHistory, setShowHistory] = useState(false);
 
   const fetchData = async () => {
     try {
@@ -153,42 +154,77 @@ export default function Home() {
       </header>
 
       {/* Contenu principal */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6 py-3 pb-20">
         {error && (
-          <div className="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 p-4 rounded-xl mb-6">
+          <div className="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 p-3 rounded-lg mb-3 text-sm">
             {error}
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Colonne gauche - Météo actuelle */}
-          <div className="lg:col-span-1 space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+          {/* Météo actuelle - compacte */}
+          <div className="md:col-span-1">
             {forecast && (
               <CurrentWeatherCard
                 data={forecast.current}
                 todayMinMax={forecast.todayMinMax}
               />
             )}
+          </div>
+
+          {/* Soleil & Lune */}
+          <div className="md:col-span-1">
             {sunMoon && <SunMoon data={sunMoon} />}
           </div>
 
-          {/* Colonne centrale - Prévisions */}
-          <div className="lg:col-span-1 space-y-6">
+          {/* Prévisions horaires */}
+          <div className="md:col-span-2 lg:col-span-2">
             {forecast && <HourlyForecast data={forecast.hourly} />}
+          </div>
+
+          {/* Prévisions 10 jours */}
+          <div className="md:col-span-2 lg:col-span-4">
             {forecast && <DailyForecast data={forecast.daily} />}
           </div>
 
-          {/* Colonne droite - Historique */}
-          <div className="lg:col-span-1">
-            {history && <WeatherHistory data={history} />}
+          {/* Bouton historique */}
+          <div className="md:col-span-2 lg:col-span-4">
+            <button
+              onClick={() => setShowHistory(true)}
+              className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+            >
+              📊 Voir l'historique des 85 années
+            </button>
           </div>
         </div>
       </div>
 
+      {/* Modal Historique */}
+      {showHistory && history && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white dark:bg-gray-900 flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                Historique du {history.day}
+              </h2>
+              <button
+                onClick={() => setShowHistory(false)}
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            <div className="p-4">
+              <WeatherHistory data={history} />
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Footer */}
-      <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 mt-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500 dark:text-gray-400">
+      <footer className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
+        <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6 py-2">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
             <p>
               &copy; {new Date().getFullYear()} Mulhouse Météo. Données:{" "}
               <a
