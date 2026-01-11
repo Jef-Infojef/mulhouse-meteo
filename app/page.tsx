@@ -7,6 +7,7 @@ import HourlyForecast from "@/components/HourlyForecast";
 import DailyForecast from "@/components/DailyForecast";
 import SunMoon from "@/components/SunMoon";
 import WeatherHistory from "@/components/WeatherHistory";
+import AtmoAlert from "@/components/AtmoAlert";
 import ThemeToggle from "@/components/ThemeToggle";
 import { RefreshCw, MapPin, Calendar, Clock, X } from "lucide-react";
 
@@ -185,6 +186,11 @@ export default function Home() {
           {/* Prévisions 10 jours */}
           <div className="md:col-span-2 lg:col-span-4">
             {forecast && <DailyForecast data={forecast.daily} />}
+          </div>
+
+          {/* Qualité de l'air */}
+          <div className="md:col-span-2 lg:col-span-4">
+            <AtmoAlert />
           </div>
 
           {/* Bouton historique */}
