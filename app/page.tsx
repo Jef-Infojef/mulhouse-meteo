@@ -159,7 +159,7 @@ export default function Home() {
                 Mulhouse Météo
               </h1>
               <p className="text-sm sm:text-lg text-gray-600 dark:text-gray-400 max-w-2xl">
-                Prévisions en temps réel et archives historiques depuis 1940
+                Prévisions en temps réel
               </p>
             </div>
           </div>
