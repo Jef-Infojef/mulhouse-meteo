@@ -25,7 +25,7 @@ export default function CurrentWeatherCard({ data, todayMinMax }: Props) {
   const uvInfo = getUVLevel(data.uvIndex);
 
   return (
-    <div className="bg-gradient-to-br from-blue-500 to-blue-700 dark:from-blue-900 dark:to-blue-950 rounded-xl p-4 text-white shadow-lg">
+    <div className="bg-gradient-to-br from-blue-500 to-blue-700 dark:from-blue-900 dark:to-blue-950 rounded-xl p-4 text-white shadow-lg hover:shadow-xl transition-shadow">
       <div className="flex items-center justify-between mb-3">
         <div>
           <h2 className="text-sm font-medium opacity-90">Mulhouse</h2>

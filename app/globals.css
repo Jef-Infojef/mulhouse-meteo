@@ -1,13 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: #f8f9fa;
   --foreground: #111827;
 }
 
 .dark {
   --background: #030712;
   --foreground: #f9fafb;
+}
+
+* {
+  @apply transition-colors;
 }
 
 @theme inline {

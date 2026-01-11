@@ -102,11 +102,11 @@ export default function Home() {
   return (
     <main className="min-h-screen">
       {/* Header */}
-      <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 sticky top-0 z-50">
+      <header className="bg-white dark:bg-gray-900 border-b-2 border-blue-200 dark:border-gray-800 sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Barre d'info */}
-          <div className="flex items-center justify-between py-2 text-sm border-b border-gray-100 dark:border-gray-800">
-            <div className="flex items-center gap-4 text-gray-600 dark:text-gray-400">
+          <div className="flex items-center justify-between py-2 text-sm border-b border-gray-200 dark:border-gray-800">
+            <div className="flex items-center gap-4 text-gray-700 dark:text-gray-400">
               <div className="flex items-center gap-1">
                 <Calendar size={14} />
                 <span className="hidden sm:inline">{formatDate(currentTime)}</span>
@@ -141,12 +141,12 @@ export default function Home() {
           {/* Titre */}
           <div className="py-4">
             <div className="flex items-center gap-2">
-              <MapPin size={24} className="text-blue-600" />
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              <MapPin size={28} className="text-blue-600 dark:text-blue-400" />
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
                 Mulhouse Météo
               </h1>
             </div>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 ml-9">
               Prévisions en temps réel et archives historiques depuis 1940
             </p>
           </div>
@@ -202,8 +202,8 @@ export default function Home() {
       {/* Modal Historique */}
       {showHistory && history && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-900 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white dark:bg-gray-900 flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800">
+          <div className="bg-white dark:bg-gray-900 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-xl">
+            <div className="sticky top-0 bg-white dark:bg-gray-900 flex items-center justify-between p-4 border-b-2 border-blue-200 dark:border-gray-800">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                 Historique du {history.day}
               </h2>
@@ -222,7 +222,7 @@ export default function Home() {
       )}
 
       {/* Footer */}
-      <footer className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
+      <footer className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t-2 border-blue-200 dark:border-gray-800 shadow-lg">
         <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6 py-2">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
             <p>

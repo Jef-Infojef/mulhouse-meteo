@@ -15,7 +15,7 @@ export default function WeatherHistory({ data }: Props) {
   const displayedYears = showFullTimeline ? data.timeline : data.timeline.slice(0, 10);
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-lg">
+    <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-md dark:shadow-lg border border-gray-200 dark:border-gray-700">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
           Historique du {data.day}

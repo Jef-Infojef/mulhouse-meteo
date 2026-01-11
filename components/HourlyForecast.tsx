@@ -13,7 +13,7 @@ export default function HourlyForecast({ data }: Props) {
   const currentHour = now.getHours();
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-lg">
+    <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-md dark:shadow-lg border border-gray-200 dark:border-gray-700">
       <h3 className="text-sm font-semibold mb-2 text-gray-900 dark:text-white">
         Prévisions horaires
       </h3>
