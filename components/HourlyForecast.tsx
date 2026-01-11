@@ -10,7 +10,19 @@ interface Props {
 
 export default function HourlyForecast({ data }: Props) {
   const now = new Date();
-  const currentHour = now.getHours();
+
+  // Trouver l'index de l'heure actuelle
+  let startIndex = 0;
+  for (let i = 0; i < data.length; i++) {
+    const hourDate = new Date(data[i].time);
+    if (
+      hourDate.getHours() === now.getHours() &&
+      hourDate.getDate() === now.getDate()
+    ) {
+      startIndex = i;
+      break;
+    }
+  }
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-md dark:shadow-lg border border-gray-200 dark:border-gray-700">
@@ -18,9 +30,9 @@ export default function HourlyForecast({ data }: Props) {
         Prévisions horaires
       </h3>
       <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin">
-        {data.slice(0, 24).map((hour, index) => {
+        {data.slice(startIndex, startIndex + 24).map((hour, index) => {
           const hourDate = new Date(hour.time);
-          const isCurrentHour = hourDate.getHours() === currentHour &&
+          const isCurrentHour = hourDate.getHours() === now.getHours() &&
                                 hourDate.getDate() === now.getDate();
 
           return (
