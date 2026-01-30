@@ -10,6 +10,7 @@ import SunMoon from "@/components/SunMoon";
 import WeatherHistory from "@/components/WeatherHistory";
 import AtmoAlert from "@/components/AtmoAlert";
 import { RefreshCw, Calendar, Clock, X, Cloud, Sun, Moon, CloudRain } from "lucide-react";
+import { Logo } from "@/components/Logo";
 
 export default function Home() {
   const [forecast, setForecast] = useState<ForecastData | null>(null);
@@ -147,16 +148,17 @@ export default function Home() {
         </div>
       </div>
 
-      {/* HEADER PRINCIPAL */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <header className="mb-8 sm:mb-10 py-6">
-          <div className="flex items-start justify-between gap-4 sm:gap-6">
-            <div className="flex items-center gap-3 sm:gap-4 flex-1">
-              <div className="inline-flex items-center justify-center p-2.5 sm:p-3 bg-blue-600 rounded-full shadow-lg shadow-blue-200 dark:shadow-blue-900/50 shrink-0">
-                <Cloud className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
+      {/* HEADER PRINCIPAL - Intégré avec espace pub */}
+      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex items-start justify-between gap-6 lg:gap-8">
+            {/* Partie gauche - Logo et titre */}
+            <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+              <div className="inline-flex items-center justify-center p-1 bg-slate-900 rounded-2xl shadow-xl shadow-red-900/10 border border-slate-800 shrink-0">
+                <Logo className="h-24 w-24 sm:h-32 sm:w-32 text-red-600" />
               </div>
-              <div>
-                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+              <div className="min-w-0">
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight truncate">
                   Mulhouse Météo
                 </h1>
                 <p className="text-sm sm:text-lg text-gray-600 dark:text-gray-400">
@@ -165,7 +167,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Espace Pub - Medium Rectangle (IAB Standard) */}
+            {/* Partie droite - Espace publicitaire (Medium Rectangle) */}
             <div className="hidden lg:flex shrink-0">
               <div className="w-80 h-64 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700 flex items-center justify-center">
                 <div className="text-center px-4">
@@ -182,17 +184,18 @@ export default function Home() {
               </div>
             </div>
           </div>
-        </header>
+        </div>
+      </header>
 
-        {/* Contenu principal */}
-        <div className="py-6 pb-24">
-          {error && (
-            <div className="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 p-3 rounded-lg mb-3 text-sm">
-              {error}
-            </div>
-          )}
+      {/* Contenu principal */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-24">
+        {error && (
+          <div className="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 p-3 rounded-lg mb-3 text-sm">
+            {error}
+          </div>
+        )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
             {/* Météo actuelle - compacte */}
             <div className="md:col-span-1">
             {forecast && (
@@ -234,7 +237,6 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </div>
 
       {/* Modal Historique */}
       {showHistory && history && (
@@ -290,3 +292,4 @@ export default function Home() {
     </main>
   );
 }
+
