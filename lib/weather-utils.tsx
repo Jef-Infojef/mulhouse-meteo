@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 
 // Mapping des codes météo WMO vers descriptions françaises
-export const weatherDescriptions: Record<number, string> = {
+const weatherDescriptions: Record<number, string> = {
   0: "Ciel dégagé",
   1: "Principalement dégagé",
   2: "Partiellement nuageux",
