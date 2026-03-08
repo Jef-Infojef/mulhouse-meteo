@@ -165,7 +165,3 @@ export function getWindDirection(degrees: number): string {
   const index = Math.round(degrees / 45) % 8;
   return directions[index];
 }
-
-export function cn(...classes: (string | undefined | null | false)[]): string {
-  return classes.filter(Boolean).join(" ");
-}
