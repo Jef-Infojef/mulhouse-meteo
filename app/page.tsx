@@ -9,9 +9,10 @@ import DailyForecast from "@/components/DailyForecast";
 import SunMoon from "@/components/SunMoon";
 import WeatherHistory from "@/components/WeatherHistory";
 import AtmoAlert from "@/components/AtmoAlert";
-import { RefreshCw, Calendar, Clock, X, Cloud, Sun, Moon, CloudRain } from "lucide-react";
+import { Calendar, Clock, X, Sun, Moon } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { SplashScreen } from "@/components/SplashScreen";
+import { getWeatherIcon } from "@/lib/weather-utils";
 
 type State = {
   showSplash: boolean;
@@ -133,13 +134,6 @@ export default function Home() {
     await fetchData();
   };
 
-  const getWeatherIcon = (code: number) => {
-    if (code === 0 || code === 1) return <Sun size={14} className="text-yellow-500" />;
-    if (code === 2 || code === 3) return <Cloud size={14} className="text-gray-400" />;
-    if (code >= 45 && code <= 67) return <CloudRain size={14} className="text-blue-500" />;
-    return <Cloud size={14} className="text-gray-400" />;
-  };
-
   const {
     showSplash,
     forecast,
@@ -177,7 +171,7 @@ export default function Home() {
 
             {forecast && (
               <div className="flex items-center gap-1.5 border-l border-gray-300 dark:border-gray-700 pl-3 sm:pl-4">
-                {getWeatherIcon(forecast.current.conditionCode)}
+                {getWeatherIcon(forecast.current.conditionCode, 14, forecast.current.isDay)}
                 <span className="font-bold text-gray-900 dark:text-white">{Math.round(forecast.current.temperature)}°C</span>
               </div>
             )}
