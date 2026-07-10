@@ -9,6 +9,7 @@ import DailyForecast from "@/components/DailyForecast";
 import SunMoon from "@/components/SunMoon";
 import WeatherHistory from "@/components/WeatherHistory";
 import AtmoAlert from "@/components/AtmoAlert";
+import AtmoWidget from "@/components/AtmoWidget";
 import WeatherAlertsCard from "@/components/WeatherAlertsCard";
 import { Calendar, Clock, X, Sun, Moon } from "lucide-react";
 import { Logo } from "@/components/Logo";
@@ -312,6 +313,7 @@ export default function Home() {
             <div className="md:col-span-2 lg:col-span-4 flex flex-wrap items-stretch gap-4 fade-up" style={{ animationDelay: "0.25s" }}>
               {sunMoon && <SunMoon data={sunMoon} />}
               <AtmoAlert />
+              <AtmoWidget />
             </div>
 
             {/* Bouton historique */}
