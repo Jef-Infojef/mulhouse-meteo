@@ -197,73 +197,74 @@ export default function Home() {
       {showSplash && (
         <SplashScreen onFinish={() => dispatch({ type: 'SET_SPLASH', payload: false })} />
       )}
-      
-      <main className="min-h-screen">
-      {/* TOP BAR - Info Bar */}
-      <div className="w-full bg-gray-100/50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-800 py-2 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-2 text-[10px] sm:text-sm font-medium text-gray-600 dark:text-gray-400">
+
+      <main className="min-h-screen flex flex-col">
+      {/* TOP BAR — barre d'infos translucide */}
+      <div className="w-full glass-bar border-b py-2 sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-2 text-[10px] sm:text-sm font-medium text-slate-600 dark:text-slate-400">
           <div className="flex items-center gap-1.5 capitalize">
-            <Calendar size={14} className="text-blue-600 shrink-0" />
+            <Calendar size={14} className="text-sky-600 dark:text-sky-400 shrink-0" />
             <span className="whitespace-nowrap" suppressHydrationWarning>
               {currentTime.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
             </span>
           </div>
           <div className="flex items-center gap-3 sm:gap-4">
-            <div className="flex items-center gap-1.5 sm:border-l border-gray-300 dark:border-gray-700 sm:pl-4">
-              <Clock size={14} className="text-blue-600 shrink-0" />
+            <div className="flex items-center gap-1.5 tabular-nums sm:border-l border-slate-300/60 dark:border-slate-700/60 sm:pl-4">
+              <Clock size={14} className="text-sky-600 dark:text-sky-400 shrink-0" />
               <span suppressHydrationWarning>{currentTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
             </div>
 
             {forecast && (
-              <div className="flex items-center gap-1.5 border-l border-gray-300 dark:border-gray-700 pl-3 sm:pl-4">
+              <div className="flex items-center gap-1.5 border-l border-slate-300/60 dark:border-slate-700/60 pl-3 sm:pl-4">
                 {getWeatherIcon(forecast.current.conditionCode, 14, forecast.current.isDay)}
-                <span className="font-bold text-gray-900 dark:text-white">{Math.round(forecast.current.temperature)}°C</span>
+                <span className="font-bold tabular-nums text-slate-900 dark:text-white">{Math.round(forecast.current.temperature)}°C</span>
               </div>
             )}
 
             {mounted && (
               <button
                 onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-                className="flex items-center justify-center p-1.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm"
+                className="flex items-center justify-center p-1.5 rounded-full border border-slate-200/80 dark:border-white/10 bg-white/80 dark:bg-white/5 shadow-sm hover:scale-110 hover:border-sky-400/50 active:scale-95 transition-all duration-200"
                 aria-label="Toggle dark mode"
               >
-                {resolvedTheme === 'dark' ? <Sun size={14} className="text-yellow-500" /> : <Moon size={14} className="text-blue-600" />}
+                {resolvedTheme === 'dark' ? <Sun size={14} className="text-amber-400" /> : <Moon size={14} className="text-sky-600" />}
               </button>
             )}
           </div>
         </div>
       </div>
 
-      {/* HEADER PRINCIPAL - Intégré avec espace pub */}
-      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-start justify-between gap-6 lg:gap-8">
+      {/* HEADER PRINCIPAL — hero avec espace pub */}
+      <header className="border-b border-slate-200/50 dark:border-white/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex items-center justify-between gap-6 lg:gap-8">
             {/* Partie gauche - Logo et titre */}
-            <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
-              <div className="inline-flex items-center justify-center p-1 bg-slate-900 rounded-2xl shadow-xl shadow-red-900/10 border border-slate-800 shrink-0">
-                <Logo className="h-24 w-24 sm:h-32 sm:w-32 text-red-600" />
+            <div className="flex items-center gap-4 sm:gap-5 flex-1 min-w-0 fade-up">
+              <div className="relative inline-flex items-center justify-center p-1.5 bg-slate-950 rounded-3xl shadow-2xl shadow-sky-900/20 ring-1 ring-white/10 shrink-0">
+                <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-sky-500/20 via-transparent to-indigo-500/20" aria-hidden />
+                <Logo className="relative h-20 w-20 sm:h-28 sm:w-28" />
               </div>
               <div className="min-w-0">
-                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight truncate">
+                <h1 className="text-gradient text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tighter truncate pb-1">
                   Mulhouse Météo
                 </h1>
-                <p className="text-sm sm:text-lg text-gray-600 dark:text-gray-400">
-                  Prévisions en temps réel
+                <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 font-medium">
+                  Prévisions en temps réel · 85 ans d&apos;archives
                 </p>
               </div>
             </div>
 
             {/* Partie droite - Espace publicitaire (Medium Rectangle) */}
-            <div className="hidden lg:flex shrink-0">
-              <div className="w-80 h-64 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700 flex items-center justify-center">
+            <div className="hidden lg:flex shrink-0 fade-up" style={{ animationDelay: "0.1s" }}>
+              <div className="w-80 h-64 glass-card border-dashed! flex items-center justify-center">
                 <div className="text-center px-4">
-                  <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                  <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
                     Espace Publicitaire
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-500 mt-2">
+                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">
                     300×250px
                   </p>
-                  <p className="text-[10px] text-gray-400 dark:text-gray-600 mt-1">
+                  <p className="text-[10px] text-slate-400/80 dark:text-slate-600 mt-1">
                     Medium Rectangle (IAB)
                   </p>
                 </div>
@@ -274,21 +275,21 @@ export default function Home() {
       </header>
 
       {/* Contenu principal */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-24">
+      <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 flex-1">
         {error && (
-          <div className="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 p-3 rounded-lg mb-3 text-sm">
+          <div className="glass-card border-red-300/60! dark:border-red-500/30! text-red-600 dark:text-red-400 p-3 mb-4 text-sm">
             {error}
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Vigilance Météo-France — sous le header */}
-            <div className="md:col-span-2 lg:col-span-4">
+            <div className="md:col-span-2 lg:col-span-4 fade-up" style={{ animationDelay: "0.05s" }}>
               <WeatherAlertsCard departments={["68"]} />
             </div>
 
-            {/* Météo actuelle (carte bleue) */}
-            <div className="md:col-span-1">
+            {/* Météo actuelle (carte hero) */}
+            <div className="md:col-span-1 fade-up" style={{ animationDelay: "0.1s" }}>
               {forecast && (
                 <CurrentWeatherCard
                   data={forecast.current}
@@ -298,28 +299,32 @@ export default function Home() {
             </div>
 
             {/* Prévisions horaires — à côté de la météo actuelle */}
-            <div className="md:col-span-1 lg:col-span-3">
+            <div className="md:col-span-1 lg:col-span-3 fade-up" style={{ animationDelay: "0.15s" }}>
               {forecast && <HourlyForecast data={forecast.hourly} />}
             </div>
 
             {/* Prévisions 10 jours */}
-            <div className="md:col-span-2 lg:col-span-4">
+            <div className="md:col-span-2 lg:col-span-4 fade-up" style={{ animationDelay: "0.2s" }}>
               {forecast && <DailyForecast data={forecast.daily} />}
             </div>
 
             {/* Soleil & Lune + qualité de l'air — avant l'historique */}
-            <div className="md:col-span-2 lg:col-span-4 flex flex-wrap items-start gap-3">
+            <div className="md:col-span-2 lg:col-span-4 flex flex-wrap items-stretch gap-4 fade-up" style={{ animationDelay: "0.25s" }}>
               {sunMoon && <SunMoon data={sunMoon} />}
               <AtmoAlert />
             </div>
 
             {/* Bouton historique */}
-            <div className="md:col-span-2 lg:col-span-4">
-            <button
-              onClick={handleOpenHistory}
-              className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors"
-            >
-              📊 Voir l'historique des 85 années
+            <div className="md:col-span-2 lg:col-span-4 fade-up" style={{ animationDelay: "0.3s" }}>
+              <button
+                onClick={handleOpenHistory}
+                className="group relative w-full overflow-hidden rounded-2xl bg-gradient-to-r from-sky-600 via-blue-600 to-indigo-600 text-white font-semibold py-3.5 px-4 shadow-lg shadow-sky-600/25 hover:shadow-xl hover:shadow-sky-600/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
+              >
+                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out" aria-hidden />
+                <span className="relative inline-flex items-center gap-2">
+                  <Calendar size={16} className="shrink-0" />
+                  Explorer 85 ans d&apos;historique météo
+                </span>
               </button>
             </div>
           </div>
@@ -327,23 +332,36 @@ export default function Home() {
 
       {/* Modal Historique */}
       {showHistory && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-900 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-xl">
-            <div className="sticky top-0 bg-white dark:bg-gray-900 flex items-center justify-between p-4 border-b-2 border-blue-200 dark:border-gray-800">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                {history ? `Historique du ${history.day}` : "Historique météo"}
-              </h2>
+        <div
+          className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          onClick={() => dispatch({ type: 'SET_SHOW_HISTORY', payload: false })}
+        >
+          <div
+            className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200/60 dark:border-white/10 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl fade-up"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="sticky top-0 z-10 glass-bar border-b rounded-t-3xl flex items-center justify-between p-4">
+              <div className="flex items-center gap-3 min-w-0">
+                <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white truncate">
+                  {history ? `Historique du ${history.day}` : "Historique météo"}
+                </h2>
+                {history && (
+                  <span className="shrink-0 text-xs font-medium px-2.5 py-1 rounded-full bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-300">
+                    {history.totalYearsAnalyzed} ans de données
+                  </span>
+                )}
+              </div>
               <button
                 onClick={() => dispatch({ type: 'SET_SHOW_HISTORY', payload: false })}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
                 aria-label="Fermer l'historique"
               >
-                <X size={24} />
+                <X size={22} />
               </button>
             </div>
             <div className="p-4">
               {historyLoading ? (
-                <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-8">
+                <p className="text-sm text-slate-500 dark:text-slate-400 text-center py-8">
                   Chargement de l&apos;historique…
                 </p>
               ) : historyError ? (
@@ -351,7 +369,7 @@ export default function Home() {
                   <p className="text-sm text-red-600 dark:text-red-400">{historyError}</p>
                   <button
                     onClick={loadHistory}
-                    className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                    className="text-sm font-medium text-sky-600 dark:text-sky-400 hover:underline"
                   >
                     Réessayer
                   </button>
@@ -365,16 +383,16 @@ export default function Home() {
       )}
 
       {/* Footer */}
-      <footer className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-[10px] sm:text-sm text-gray-500 dark:text-gray-400">
+      <footer className="glass-bar border-t mt-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-[10px] sm:text-sm text-slate-500 dark:text-slate-400">
             <p>
               &copy; {new Date().getFullYear()} Mulhouse Météo. Données:{" "}
               <a
                 href="https://open-meteo.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:underline"
+                className="text-sky-600 dark:text-sky-400 hover:underline"
               >
                 Open-Meteo
               </a>
@@ -385,7 +403,7 @@ export default function Home() {
                 href="https://mulhouse-actu.vercel.app"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:underline"
+                className="text-sky-600 dark:text-sky-400 hover:underline"
               >
                 Mulhouse Actu
               </a>

@@ -29,7 +29,7 @@ interface WeatherAlertsCardProps {
 }
 
 const CARD_SHELL =
-  "rounded-2xl overflow-hidden border bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800"
+  "rounded-2xl overflow-hidden border backdrop-blur-xl bg-white/72 dark:bg-white/[0.045] border-white/65 dark:border-white/10 shadow-[0_1px_2px_rgb(15_23_42/0.04),0_12px_32px_-16px_rgb(15_23_42/0.14)] dark:shadow-[0_1px_2px_rgb(0_0_0/0.35),0_16px_40px_-20px_rgb(0_0_0/0.6)]"
 
 const LEVEL_CONFIG: Record<
   AlertLevel,

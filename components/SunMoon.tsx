@@ -11,57 +11,52 @@ interface Props {
 export default function SunMoon({ data }: Props) {
   const moonInfo = getMoonPhaseInfo(data.moonPhase);
 
-  const formatDiff = (minutes: number): string => {
-    const absMinutes = Math.abs(minutes);
-    return minutes >= 0 ? `+${absMinutes} min` : `-${absMinutes} min`;
-  };
-
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-md dark:shadow-lg border border-gray-200 dark:border-gray-700">
-      <h3 className="text-sm font-semibold mb-2 text-gray-900 dark:text-white">
-        Soleil & Lune
+    <div className="glass-card p-4 flex-1 min-w-[280px] flex flex-col">
+      <h3 className="text-sm font-semibold tracking-tight mb-3 text-slate-900 dark:text-white">
+        Soleil &amp; Lune
       </h3>
 
-      <div className="grid grid-cols-2 gap-2 text-xs">
-        <div className="flex items-center gap-2">
-          <div className="p-1 bg-orange-100 dark:bg-orange-900/30 rounded">
-            <Sunrise size={14} className="text-orange-500" />
+      <div className="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs content-center">
+        <div className="flex items-center gap-2.5 rounded-xl bg-slate-500/5 dark:bg-white/5 p-2.5">
+          <div className="p-1.5 rounded-lg bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900/40 dark:to-orange-900/30">
+            <Sunrise size={16} className="text-orange-500" />
           </div>
           <div>
-            <p className="text-gray-500 dark:text-gray-400">Lever</p>
-            <p className="font-medium text-gray-900 dark:text-white">{formatTime(data.sunrise)}</p>
+            <p className="text-slate-500 dark:text-slate-400 text-[10px]">Lever</p>
+            <p className="font-semibold tabular-nums text-slate-900 dark:text-white">{formatTime(data.sunrise)}</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="p-1 bg-orange-100 dark:bg-orange-900/30 rounded">
-            <Sunset size={14} className="text-orange-600" />
+        <div className="flex items-center gap-2.5 rounded-xl bg-slate-500/5 dark:bg-white/5 p-2.5">
+          <div className="p-1.5 rounded-lg bg-gradient-to-br from-orange-100 to-rose-100 dark:from-orange-900/40 dark:to-rose-900/30">
+            <Sunset size={16} className="text-orange-600" />
           </div>
           <div>
-            <p className="text-gray-500 dark:text-gray-400">Coucher</p>
-            <p className="font-medium text-gray-900 dark:text-white">{formatTime(data.sunset)}</p>
+            <p className="text-slate-500 dark:text-slate-400 text-[10px]">Coucher</p>
+            <p className="font-semibold tabular-nums text-slate-900 dark:text-white">{formatTime(data.sunset)}</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="p-1 bg-blue-100 dark:bg-blue-900/30 rounded">
-            <Clock size={14} className="text-blue-500" />
+        <div className="flex items-center gap-2.5 rounded-xl bg-slate-500/5 dark:bg-white/5 p-2.5">
+          <div className="p-1.5 rounded-lg bg-gradient-to-br from-sky-100 to-blue-100 dark:from-sky-900/40 dark:to-blue-900/30">
+            <Clock size={16} className="text-sky-500" />
           </div>
           <div>
-            <p className="text-gray-500 dark:text-gray-400">Jour</p>
-            <p className="font-medium text-gray-900 dark:text-white">
+            <p className="text-slate-500 dark:text-slate-400 text-[10px]">Durée du jour</p>
+            <p className="font-semibold tabular-nums text-slate-900 dark:text-white">
               {formatDuration(data.daylightDuration)}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="text-lg">
+        <div className="flex items-center gap-2.5 rounded-xl bg-slate-500/5 dark:bg-white/5 p-2.5">
+          <div className="text-xl leading-none" title={moonInfo.label}>
             {moonInfo.icon}
           </div>
           <div>
-            <p className="text-gray-500 dark:text-gray-400">Lune</p>
-            <p className="font-medium text-gray-900 dark:text-white">{Math.round(data.moonPhase * 100)}%</p>
+            <p className="text-slate-500 dark:text-slate-400 text-[10px]">Lune</p>
+            <p className="font-semibold tabular-nums text-slate-900 dark:text-white">{Math.round(data.moonPhase * 100)}%</p>
           </div>
         </div>
       </div>
