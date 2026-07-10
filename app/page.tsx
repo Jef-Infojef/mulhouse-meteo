@@ -9,6 +9,7 @@ import DailyForecast from "@/components/DailyForecast";
 import SunMoon from "@/components/SunMoon";
 import WeatherHistory from "@/components/WeatherHistory";
 import AtmoAlert from "@/components/AtmoAlert";
+import WeatherAlertsCard from "@/components/WeatherAlertsCard";
 import { Calendar, Clock, X, Sun, Moon } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { SplashScreen } from "@/components/SplashScreen";
@@ -262,8 +263,9 @@ export default function Home() {
               {forecast && <DailyForecast data={forecast.daily} />}
             </div>
 
-            {/* Qualité de l'air */}
-            <div className="md:col-span-2 lg:col-span-4">
+            {/* Alertes : vigilance Météo-France + qualité de l'air */}
+            <div className="md:col-span-2 lg:col-span-4 flex flex-col gap-2.5">
+              <WeatherAlertsCard departments={["68"]} />
               <AtmoAlert />
             </div>
 
