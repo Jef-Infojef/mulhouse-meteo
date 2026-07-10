@@ -15,7 +15,7 @@ export function SplashScreen({ onFinish }: SplashScreenProps) {
   const containerAnimation = { opacity: 0 };
   const containerTransition = shouldReduceMotion 
     ? { duration: 0.5, delay: 0.5 } 
-    : { duration: 0.8, delay: 2.2, ease: "easeOut" };
+    : { duration: 0.8, delay: 2.2, ease: "easeOut" as const };
 
   const logoInitial = shouldReduceMotion 
     ? { scale: 1, opacity: 0 } 
@@ -34,7 +34,7 @@ export function SplashScreen({ onFinish }: SplashScreenProps) {
     : {
         duration: 2.5,
         times: [0, 0.4, 1],
-        ease: "easeInOut"
+        ease: "easeInOut" as const,
       };
 
   const textInitial = shouldReduceMotion 
