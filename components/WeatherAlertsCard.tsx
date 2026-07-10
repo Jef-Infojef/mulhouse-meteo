@@ -239,12 +239,6 @@ export default function WeatherAlertsCard({
   const alerts = fetchedAlerts ?? initialAlerts
   const [expanded, setExpanded] = useState(false)
 
-  useEffect(() => {
-    if (alerts?.hasActiveAlerts && alerts.maxLevel >= 2) {
-      setExpanded(true)
-    }
-  }, [alerts?.hasActiveAlerts, alerts?.maxLevel])
-
   if (loading && !alerts) {
     return (
       <div
