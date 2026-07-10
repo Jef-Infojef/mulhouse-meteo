@@ -4,7 +4,6 @@ import { useEffect, useState, type ElementType } from "react"
 import { LazyMotion, m, domAnimation } from "framer-motion"
 import {
   AlertTriangle,
-  ChevronDown,
   AlertCircle,
   CheckCircle2,
   ExternalLink,
@@ -39,7 +38,6 @@ const LEVEL_CONFIG: Record<
     short: string
     accent: string
     headerGradient: string
-    headerHover: string
     iconBg: string
     icon: string
     badge: string
@@ -51,8 +49,6 @@ const LEVEL_CONFIG: Record<
     short: "Vert",
     accent: "border-l-green-500",
     headerGradient: "from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/15",
-    headerHover:
-      "hover:from-green-100 hover:to-emerald-100 dark:hover:from-green-950/35 dark:hover:to-emerald-950/25",
     iconBg: "bg-green-100 dark:bg-green-900/50",
     icon: "text-green-600 dark:text-green-400",
     badge: "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300",
@@ -64,8 +60,6 @@ const LEVEL_CONFIG: Record<
     accent: "border-l-amber-500",
     headerGradient:
       "from-amber-50 via-yellow-50 to-orange-50 dark:from-amber-950/35 dark:via-yellow-950/25 dark:to-orange-950/20",
-    headerHover:
-      "hover:from-amber-100 hover:via-yellow-100 hover:to-orange-100 dark:hover:from-amber-950/50 dark:hover:via-yellow-950/40 dark:hover:to-orange-950/30",
     iconBg: "bg-amber-100 dark:bg-amber-900/50",
     icon: "text-amber-700 dark:text-amber-400",
     badge: "bg-amber-600 text-white dark:bg-amber-600 dark:text-white",
@@ -77,8 +71,6 @@ const LEVEL_CONFIG: Record<
     accent: "border-l-red-500",
     headerGradient:
       "from-red-100 via-orange-50 to-red-50 dark:from-red-950/50 dark:via-orange-950/30 dark:to-red-950/40",
-    headerHover:
-      "hover:from-red-200 hover:via-orange-100 hover:to-red-100 dark:hover:from-red-950/65 dark:hover:via-orange-950/45 dark:hover:to-red-950/55",
     iconBg: "bg-red-100 dark:bg-red-900/60",
     icon: "text-red-600 dark:text-red-400",
     badge: "bg-red-600 text-white dark:bg-red-600 dark:text-white",
@@ -89,7 +81,6 @@ const LEVEL_CONFIG: Record<
     short: "Rouge",
     accent: "border-l-red-600",
     headerGradient: "from-red-50 to-rose-50 dark:from-red-950/20 dark:to-rose-950/15",
-    headerHover: "hover:from-red-100 hover:to-rose-100 dark:hover:from-red-950/35 dark:hover:to-rose-950/25",
     iconBg: "bg-red-100 dark:bg-red-900/50",
     icon: "text-red-600 dark:text-red-400",
     badge: "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300",
@@ -163,48 +154,6 @@ function PhenomenonChip({ phenomenon, compact = false }: { phenomenon: Phenomeno
   )
 }
 
-function HorizonPanel({
-  title,
-  departments,
-  hideBulletin = false,
-}: {
-  title: string
-  departments: DepartmentAlert[]
-  hideBulletin?: boolean
-}) {
-  const phenomena = mergePhenomena(departments)
-  const maxLevel = departments.reduce<AlertLevel>((max, d) => (d.maxLevel > max ? d.maxLevel : max), 1)
-  const bulletin = sharedBulletin(...departments.map((d) => d.textBlock))
-  const levelTheme = LEVEL_CONFIG[maxLevel]
-
-  return (
-    <div className="rounded-xl p-3 space-y-2 bg-gray-50 dark:bg-gray-800/80 border border-gray-100 dark:border-gray-700">
-      <div className="flex items-center justify-between gap-2">
-        <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">{title}</p>
-        <span className={cn("text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-md", levelTheme.badge)}>
-          {LEVEL_CONFIG[maxLevel].short}
-        </span>
-      </div>
-
-      {phenomena.length ? (
-        <div className="flex flex-wrap gap-1.5">
-          {phenomena.map((p) => (
-            <PhenomenonChip key={p.id} phenomenon={p} />
-          ))}
-        </div>
-      ) : maxLevel >= 2 ? (
-        <p className="text-xs text-gray-600 dark:text-gray-400">{LEVEL_CONFIG[maxLevel].label}</p>
-      ) : (
-        <p className="text-xs text-gray-500">Aucune vigilance</p>
-      )}
-
-      {bulletin && !hideBulletin ? (
-        <p className="text-[11px] leading-snug text-gray-600 dark:text-gray-400 line-clamp-3">{bulletin}</p>
-      ) : null}
-    </div>
-  )
-}
-
 export default function WeatherAlertsCard({
   departments = ["68"],
   showGreenStatus = false,
@@ -237,7 +186,6 @@ export default function WeatherAlertsCard({
   }, [deptStr])
 
   const alerts = fetchedAlerts ?? initialAlerts
-  const [expanded, setExpanded] = useState(false)
 
   if (loading && !alerts) {
     return (
@@ -287,14 +235,10 @@ export default function WeatherAlertsCard({
     : "Haut-Rhin"
   const currentPhenomena = mergePhenomena(alerts.departments)
   const upcomingPhenomena = alerts.upcoming ? mergePhenomena(alerts.upcoming.departments) : []
-  const bulletinBlocks = [
+  const bulletinText = sharedBulletin(
     ...alerts.departments.map((d) => d.textBlock),
-    ...(alerts.upcoming?.departments.map((d) => d.textBlock) ?? []),
-  ].filter(Boolean) as string[]
-  const sharedBulletinText =
-    bulletinBlocks.length > 1 && bulletinBlocks.every((t) => t === bulletinBlocks[0])
-      ? bulletinBlocks[0]
-      : undefined
+    ...(alerts.upcoming?.departments.map((d) => d.textBlock) ?? [])
+  )
   const horizonsDiffer = Boolean(
     alerts.upcoming?.hasActiveAlerts &&
       (currentPhenomena.map((p) => `${p.id}:${p.level}`).sort().join(",") !==
@@ -310,7 +254,6 @@ export default function WeatherAlertsCard({
     minute: "2-digit",
   })
   const vigilanceUrl = `https://vigilance.meteofrance.fr/fr/${VIGILANCE_DEPT_SLUG[alerts.departments[0]?.departmentId] || "haut-rhin"}`
-  const canExpand = alerts.hasActiveAlerts
   const showUpcomingInHeader = Boolean(alerts.upcoming?.hasActiveAlerts)
   const headerPhenomena = currentPhenomena.length ? currentPhenomena : upcomingPhenomena
 
@@ -328,23 +271,18 @@ export default function WeatherAlertsCard({
           className
         )}
       >
-        <button
-          type="button"
-          onClick={() => canExpand && setExpanded((v) => !v)}
-          disabled={!canExpand}
+        <div
           className={cn(
-            "w-full px-4 py-3.5 flex items-center gap-3 text-left transition-colors",
+            "w-full px-4 py-3.5 flex items-start gap-3",
             "bg-gradient-to-r",
-            theme.headerGradient,
-            canExpand && theme.headerHover,
-            canExpand ? "cursor-pointer" : "cursor-default"
+            theme.headerGradient
           )}
         >
           <div className={cn("p-2 rounded-xl shrink-0", theme.iconBg)}>
             <HeaderIcon className={cn("w-5 h-5", theme.icon)} />
           </div>
 
-          <div className="flex-1 min-w-0 space-y-1.5">
+          <div className="flex-1 min-w-0 space-y-2">
             <div className="flex flex-wrap items-center gap-2">
               <h3
                 className={cn(
@@ -357,6 +295,10 @@ export default function WeatherAlertsCard({
               <span className={cn("px-2 py-0.5 rounded-md text-[11px] font-bold", theme.badge)}>
                 {alerts.hasActiveAlerts ? theme.label : theme.short}
               </span>
+              <div className="flex items-center gap-1 text-[11px] text-gray-400 dark:text-gray-500 ml-auto">
+                <Clock className="w-3 h-3" />
+                <span>{updateTime}</span>
+              </div>
             </div>
 
             <div
@@ -386,52 +328,16 @@ export default function WeatherAlertsCard({
                 </span>
               ) : null}
             </div>
-          </div>
 
-          <div className="flex flex-col items-end gap-1 shrink-0">
-            <div className="hidden sm:flex items-center gap-1 text-[11px] text-gray-400 dark:text-gray-500">
-              <Clock className="w-3 h-3" />
-              <span>{updateTime}</span>
-            </div>
-            {canExpand ? (
-              <m.div animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: 0.2 }}>
-                <ChevronDown className="w-5 h-5 text-gray-400 dark:text-gray-500" />
-              </m.div>
-            ) : null}
-          </div>
-        </button>
-
-        <m.div
-          initial={false}
-          animate={{ height: expanded && canExpand ? "auto" : 0 }}
-          transition={{ duration: 0.2 }}
-          className="overflow-hidden"
-        >
-          <div
-            className={cn(
-              "px-4 pb-4 pt-0 border-t space-y-3",
-              isProminent
-                ? "border-red-200/80 dark:border-red-900/50 bg-red-50/30 dark:bg-red-950/20"
-                : "border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900"
-            )}
-          >
-            <div className={cn("grid gap-2 pt-3", alerts.upcoming ? "sm:grid-cols-2" : "grid-cols-1")}>
-              <HorizonPanel
-                title="Aujourd'hui"
-                departments={alerts.departments}
-                hideBulletin={Boolean(sharedBulletinText)}
-              />
-              {alerts.upcoming ? (
-                <HorizonPanel
-                  title={shortUpcomingLabel(alerts.upcoming.label)}
-                  departments={alerts.upcoming.departments}
-                  hideBulletin={Boolean(sharedBulletinText)}
-                />
-              ) : null}
-            </div>
-
-            {sharedBulletinText ? (
-              <p className="text-xs leading-relaxed text-gray-600 dark:text-gray-400 px-0.5">{sharedBulletinText}</p>
+            {bulletinText ? (
+              <p
+                className={cn(
+                  "text-xs leading-relaxed",
+                  isProminent ? "text-red-900/90 dark:text-red-100/90" : "text-gray-600 dark:text-gray-400"
+                )}
+              >
+                {bulletinText}
+              </p>
             ) : null}
 
             <a
@@ -444,7 +350,7 @@ export default function WeatherAlertsCard({
               <ExternalLink className="w-3 h-3" />
             </a>
           </div>
-        </m.div>
+        </div>
       </m.div>
     </LazyMotion>
   )
