@@ -1,173 +1,168 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { AlertTriangle, ExternalLink } from "lucide-react";
+import { Leaf, ExternalLink } from "lucide-react";
 
-/** Dimensions officielles `.widget_standard` (widget.css Atmo Grand Est) */
-const WIDGET_STANDARD_WIDTH = 320;
-const WIDGET_STANDARD_HEIGHT = 200;
+const MULHOUSE_INSEE = "68224";
 
-interface Props {
-  mode?: "alert" | "compact";
+interface AtmoData {
+  success: boolean;
+  level: number;
+  index?: string;
+  description?: string;
+  source?: string;
+  date?: number;
+  pollutants?: {
+    no2: number;
+    o3: number;
+    pm10: number;
+    pm25: number;
+    so2: number;
+  };
 }
 
-export default function AtmoAlert({ mode = "alert" }: Props) {
-  const MULHOUSE_INSEE = "68224";
-  const [atmoData, setAtmoData] = useState<any>(null);
+/** Niveaux officiels de l'indice ATMO (couleurs réglementaires) */
+const LEVELS: Record<number, { label: string; color: string; text: string }> = {
+  1: { label: "Bon", color: "#50F0E6", text: "#083344" },
+  2: { label: "Moyen", color: "#50CCAA", text: "#052e16" },
+  3: { label: "Dégradé", color: "#F0E641", text: "#422006" },
+  4: { label: "Mauvais", color: "#FF5050", text: "#ffffff" },
+  5: { label: "Très mauvais", color: "#960032", text: "#ffffff" },
+  6: { label: "Extrêmement mauvais", color: "#872181", text: "#ffffff" },
+};
+
+const POLLUTANTS: { key: keyof NonNullable<AtmoData["pollutants"]>; label: string }[] = [
+  { key: "pm25", label: "PM₂,₅" },
+  { key: "pm10", label: "PM₁₀" },
+  { key: "no2", label: "NO₂" },
+  { key: "o3", label: "O₃" },
+  { key: "so2", label: "SO₂" },
+];
+
+export default function AtmoAlert() {
+  const [atmoData, setAtmoData] = useState<AtmoData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const fetchAtmoData = async () => {
+      try {
+        const response = await fetch("/api/weather/atmo");
+        if (response.ok) {
+          const data = await response.json();
+          setAtmoData(data);
+        }
+      } catch (error) {
+        console.error("Erreur Atmo:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchAtmoData();
   }, []);
 
-  const fetchAtmoData = async () => {
-    try {
-      const response = await fetch(`/api/weather/atmo?insee=${MULHOUSE_INSEE}`);
-      if (response.ok) {
-        const data = await response.json();
-        setAtmoData(data);
-      }
-    } catch (error) {
-      console.error("Erreur Atmo:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getQualityColor = (level: number): string => {
-    switch (level) {
-      case 1:
-        return "bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-700";
-      case 2:
-        return "bg-blue-100 dark:bg-blue-900/30 border-blue-300 dark:border-blue-700";
-      case 3:
-        return "bg-yellow-100 dark:bg-yellow-900/30 border-yellow-300 dark:border-yellow-700";
-      case 4:
-        return "bg-orange-100 dark:bg-orange-900/30 border-orange-300 dark:border-orange-700";
-      case 5:
-        return "bg-red-100 dark:bg-red-900/30 border-red-300 dark:border-red-700";
-      case 6:
-        return "bg-purple-100 dark:bg-purple-900/30 border-purple-300 dark:border-purple-700";
-      default:
-        return "bg-gray-100 dark:bg-gray-900/30 border-gray-300 dark:border-gray-700";
-    }
-  };
-
-  const getQualityLabel = (level: number): string => {
-    const labels: Record<number, string> = {
-      1: "Bon",
-      2: "Moyen",
-      3: "Dégradé",
-      4: "Médiocre",
-      5: "Mauvais",
-      6: "Extrême",
-    };
-    return labels[level] || "Inconnu";
-  };
-
-  const getQualityTextColor = (level: number): string => {
-    switch (level) {
-      case 1:
-        return "text-green-700 dark:text-green-400";
-      case 2:
-        return "text-blue-700 dark:text-blue-400";
-      case 3:
-        return "text-yellow-700 dark:text-yellow-400";
-      case 4:
-        return "text-orange-700 dark:text-orange-400";
-      case 5:
-        return "text-red-700 dark:text-red-400";
-      case 6:
-        return "text-purple-700 dark:text-purple-400";
-      default:
-        return "text-gray-700 dark:text-gray-400";
-    }
-  };
-
-  if (mode === "alert" && atmoData?.level && atmoData.level >= 4) {
+  if (loading) {
     return (
-      <div
-        className={`rounded-xl p-4 border-2 ${getQualityColor(
-          atmoData.level
-        )} shadow-md`}
-      >
-        <div className="flex items-center gap-3 mb-2">
-          <AlertTriangle size={20} className={getQualityTextColor(atmoData.level)} />
-          <h3 className={`font-bold ${getQualityTextColor(atmoData.level)}`}>
-            Qualité de l&apos;air - {getQualityLabel(atmoData.level)}
-          </h3>
+      <div className="glass-card p-4 flex-1 min-w-[300px]">
+        <div className="animate-pulse space-y-3">
+          <div className="h-4 w-32 rounded bg-slate-300/40 dark:bg-white/10" />
+          <div className="h-10 w-full rounded-xl bg-slate-300/30 dark:bg-white/5" />
+          <div className="h-8 w-full rounded-xl bg-slate-300/30 dark:bg-white/5" />
         </div>
-        <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
-          {atmoData.description ||
-            "La qualité de l'air nécessite une vigilance particulière"}
-        </p>
-        <a
-          href={`https://www.atmo-grandest.eu/air-commune/Mulhouse/${MULHOUSE_INSEE}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
-        >
-          Voir les détails <ExternalLink size={14} />
-        </a>
       </div>
     );
   }
 
-  if (mode === "compact") {
-    return (
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-md dark:shadow-lg border border-gray-200 dark:border-gray-700">
-        <h4 className="text-xs font-semibold text-gray-900 dark:text-white mb-2">
+  if (!atmoData?.success || !LEVELS[atmoData.level]) return null;
+
+  const levelInfo = LEVELS[atmoData.level];
+  const dateLabel = atmoData.date
+    ? new Date(atmoData.date).toLocaleDateString("fr-FR", {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+      })
+    : null;
+
+  return (
+    <div className="glass-card p-4 flex-1 min-w-[300px] flex flex-col">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="flex items-center gap-1.5 text-sm font-semibold tracking-tight text-slate-900 dark:text-white">
+          <Leaf size={14} className="text-emerald-500" />
           Qualité de l&apos;air
-        </h4>
-        {atmoData && (
-          <div className={`rounded-lg p-2 border ${getQualityColor(atmoData.level)}`}>
-            <p className={`text-xs font-bold ${getQualityTextColor(atmoData.level)}`}>
-              {getQualityLabel(atmoData.level)}
-            </p>
-            {atmoData.pollutants && (
-              <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 space-y-0.5">
-                {atmoData.pollutants.pm25 && (
-                  <p>PM2.5: {atmoData.pollutants.pm25.toFixed(0)} µg/m³</p>
-                )}
-                {atmoData.pollutants.pm10 && (
-                  <p>PM10: {atmoData.pollutants.pm10.toFixed(0)} µg/m³</p>
-                )}
-                {atmoData.pollutants.no2 && (
-                  <p>NO₂: {atmoData.pollutants.no2.toFixed(0)} µg/m³</p>
-                )}
-              </div>
-            )}
-          </div>
+        </h3>
+        {dateLabel && (
+          <span className="text-[11px] capitalize text-slate-400 dark:text-slate-500">
+            {dateLabel}
+          </span>
         )}
       </div>
-    );
-  }
 
-  // Widget standard — carte calée sur les dimensions réelles du widget (320×200)
-  return (
-    <div
-      className="inline-block max-w-full overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 leading-none"
-      style={{ width: WIDGET_STANDARD_WIDTH }}
-    >
-      {loading ? (
-        <div
-          className="animate-pulse bg-gray-100 dark:bg-gray-700"
-          style={{ width: WIDGET_STANDARD_WIDTH, height: WIDGET_STANDARD_HEIGHT }}
-          aria-hidden
-        />
-      ) : (
-        <iframe
-          src={`https://services.atmo-grandest.eu/widget/standard/commune/${MULHOUSE_INSEE}`}
-          title="Widget qualité de l'air Atmo Grand Est - Mulhouse"
-          width={WIDGET_STANDARD_WIDTH}
-          height={WIDGET_STANDARD_HEIGHT}
-          frameBorder="0"
-          scrolling="no"
-          className="block"
-          style={{ border: "none" }}
-          loading="lazy"
-        />
-      )}
+      <div className="flex-1 flex flex-col justify-center gap-3">
+        {/* Indice + description */}
+        <div className="flex items-center gap-3">
+          <span
+            className="inline-flex items-center px-3 py-1.5 rounded-xl text-sm font-bold shadow-sm"
+            style={{ backgroundColor: levelInfo.color, color: levelInfo.text }}
+          >
+            {levelInfo.label}
+          </span>
+          <div className="min-w-0">
+            <p className="text-xs text-slate-500 dark:text-slate-400 leading-snug">
+              {atmoData.description || `Qualité de l'air à Mulhouse : niveau ${atmoData.level}/6`}
+            </p>
+            {atmoData.index && (
+              <p className="text-[10px] text-slate-400 dark:text-slate-500">
+                Indice européen {atmoData.index}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Jauge 6 niveaux */}
+        <div className="flex gap-1" role="img" aria-label={`Indice ATMO ${atmoData.level} sur 6 : ${levelInfo.label}`}>
+          {[1, 2, 3, 4, 5, 6].map((n) => (
+            <div
+              key={n}
+              className={`h-1.5 flex-1 rounded-full ${
+                n <= atmoData.level ? "" : "bg-slate-200/70 dark:bg-white/10"
+              }`}
+              style={n <= atmoData.level ? { backgroundColor: LEVELS[n].color } : undefined}
+            />
+          ))}
+        </div>
+
+        {/* Polluants */}
+        {atmoData.pollutants && (
+          <div className="grid grid-cols-5 gap-1.5 text-center">
+            {POLLUTANTS.map(({ key, label }) => (
+              <div
+                key={key}
+                className="rounded-xl bg-slate-500/5 dark:bg-white/5 px-1 py-1.5"
+              >
+                <p className="text-[10px] text-slate-500 dark:text-slate-400">{label}</p>
+                <p className="text-xs font-semibold tabular-nums text-slate-900 dark:text-white">
+                  {Math.round(atmoData.pollutants![key])}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+        {atmoData.pollutants && (
+          <p className="text-[10px] text-slate-400 dark:text-slate-500 -mt-1.5">
+            Concentrations en µg/m³{atmoData.source ? ` · ${atmoData.source}` : ""}
+          </p>
+        )}
+      </div>
+
+      <a
+        href={`https://www.atmo-grandest.eu/air-commune/Mulhouse/${MULHOUSE_INSEE}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-sky-600 dark:text-sky-400 hover:underline"
+      >
+        Détails sur Atmo Grand Est
+        <ExternalLink size={12} />
+      </a>
     </div>
   );
 }
