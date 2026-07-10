@@ -115,7 +115,7 @@ function parseDepartmentsFromPeriod(
 
     for (const p of phenomena) {
       if (p.level > deptMaxLevel) deptMaxLevel = p.level
-      parsed.hasActiveAlerts = true
+      if (p.level >= 2) parsed.hasActiveAlerts = true
       if (p.level > parsed.maxLevel) parsed.maxLevel = p.level
     }
 
@@ -181,8 +181,12 @@ function parseCarteVigilance(data: unknown, departments: string[]): AlertsData {
       hasActiveAlerts: upcoming.hasActiveAlerts,
       maxLevel: upcoming.maxLevel,
     }
-    if (upcoming.hasActiveAlerts) result.hasActiveAlerts = true
     if (upcoming.maxLevel > result.maxLevel) result.maxLevel = upcoming.maxLevel
+  }
+
+  result.hasActiveAlerts = result.maxLevel >= 2
+  if (result.upcoming) {
+    result.upcoming.hasActiveAlerts = result.upcoming.maxLevel >= 2
   }
 
   return result

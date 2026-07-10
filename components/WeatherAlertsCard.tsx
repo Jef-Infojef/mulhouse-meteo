@@ -208,18 +208,7 @@ export default function WeatherAlertsCard({
 
   const alerts = fetchedAlerts ?? initialAlerts
 
-  if (loading && !alerts) {
-    return (
-      <div
-        className={cn(
-          CARD_SHELL,
-          "h-14 animate-pulse border-gray-200 dark:border-gray-700",
-          "bg-gradient-to-r from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900"
-        )}
-        aria-hidden
-      />
-    )
-  }
+  if (loading && !alerts) return null
   if (!alerts) return null
 
   if (alerts.error) {
@@ -249,7 +238,7 @@ export default function WeatherAlertsCard({
     )
   }
 
-  if (!alerts.hasActiveAlerts && !showGreenStatus) return null
+  if (alerts.maxLevel < 2 && !showGreenStatus) return null
 
   const deptLabel = alerts.departments.length
     ? alerts.departments.map((d) => d.departmentName).join(" · ")
