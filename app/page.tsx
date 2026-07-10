@@ -261,16 +261,14 @@ export default function Home() {
             </div>
 
             {/* Météo actuelle + qualité de l'air — avant l'historique */}
-            <div className="md:col-span-1">
+            <div className="md:col-span-2 lg:col-span-4 flex flex-col sm:flex-row flex-wrap gap-3 items-start">
               {forecast && (
                 <CurrentWeatherCard
                   data={forecast.current}
                   todayMinMax={forecast.todayMinMax}
                 />
               )}
-            </div>
-            <div className="md:col-span-1 lg:col-span-3">
-              <AtmoAlert />
+              <AtmoAlert mode="widget" />
             </div>
 
             {/* Bouton historique */}

@@ -2,9 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { AlertTriangle, ExternalLink } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+const WIDGET_SMALL_WIDTH = 300;
+const WIDGET_SMALL_HEIGHT = 180;
 
 interface Props {
-  mode?: "alert" | "compact";
+  mode?: "alert" | "compact" | "widget";
 }
 
 export default function AtmoAlert({ mode = "alert" }: Props) {
@@ -109,6 +113,39 @@ export default function AtmoAlert({ mode = "alert" }: Props) {
     );
   }
 
+  if (mode === "widget") {
+    return (
+      <div
+        className={cn(
+          "rounded-xl overflow-hidden border shadow-sm w-fit max-w-full",
+          atmoData?.level
+            ? getQualityColor(atmoData.level)
+            : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+        )}
+        style={{ maxWidth: WIDGET_SMALL_WIDTH }}
+      >
+        {loading ? (
+          <div
+            className="animate-pulse bg-gray-100 dark:bg-gray-700"
+            style={{ width: WIDGET_SMALL_WIDTH, height: WIDGET_SMALL_HEIGHT }}
+            aria-hidden
+          />
+        ) : (
+          <iframe
+            src={`https://services.atmo-grandest.eu/widget/small/commune/${MULHOUSE_INSEE}`}
+            title="Widget qualité de l'air Atmo Grand Est - Mulhouse"
+            width={WIDGET_SMALL_WIDTH}
+            height={WIDGET_SMALL_HEIGHT}
+            frameBorder="0"
+            scrolling="no"
+            className="block max-w-full"
+            loading="lazy"
+          />
+        )}
+      </div>
+    );
+  }
+
   if (mode === "compact") {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-md dark:shadow-lg border border-gray-200 dark:border-gray-700">
@@ -139,35 +176,19 @@ export default function AtmoAlert({ mode = "alert" }: Props) {
     );
   }
 
-  // Mode widget complet (par défaut)
+  // Mode widget standard (fallback)
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-md dark:shadow-lg border border-gray-200 dark:border-gray-700">
-      <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-white">
-        Qualité de l'air - Atmo Grand Est
-      </h3>
-      <div className="rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700">
-        <iframe
-          src={`https://services.atmo-grandest.eu/widget/standard/commune/${MULHOUSE_INSEE}`}
-          title="Widget qualité de l'air Atmo Grand Est - Mulhouse"
-          width="100%"
-          height="450"
-          frameBorder="0"
-          scrolling="no"
-          className="block"
-          loading="lazy"
-        />
-      </div>
-      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
-        Données:{" "}
-        <a
-          href="https://www.atmo-grandest.eu"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-600 dark:text-blue-400 hover:underline"
-        >
-          Atmo Grand Est
-        </a>
-      </p>
+    <div className="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm w-fit max-w-full">
+      <iframe
+        src={`https://services.atmo-grandest.eu/widget/small/commune/${MULHOUSE_INSEE}`}
+        title="Widget qualité de l'air Atmo Grand Est - Mulhouse"
+        width={WIDGET_SMALL_WIDTH}
+        height={WIDGET_SMALL_HEIGHT}
+        frameBorder="0"
+        scrolling="no"
+        className="block max-w-full"
+        loading="lazy"
+      />
     </div>
   );
 }
