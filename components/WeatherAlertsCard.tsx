@@ -42,6 +42,10 @@ const LEVEL_CONFIG: Record<
     icon: string
     badge: string
     dot: string
+    prominentShell: string
+    prominentTitle: string
+    prominentText: string
+    prominentBulletin: string
   }
 > = {
   1: {
@@ -53,28 +57,40 @@ const LEVEL_CONFIG: Record<
     icon: "text-green-600 dark:text-green-400",
     badge: "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300",
     dot: "bg-green-500",
+    prominentShell: "border-green-200 dark:border-green-900/60",
+    prominentTitle: "text-green-900 dark:text-green-50",
+    prominentText: "text-green-800/80 dark:text-green-200/80",
+    prominentBulletin: "text-green-900/90 dark:text-green-100/90",
   },
   2: {
     label: "Vigilance jaune",
     short: "Jaune",
-    accent: "border-l-amber-500",
-    headerGradient:
-      "from-amber-50 via-yellow-50 to-orange-50 dark:from-amber-950/35 dark:via-yellow-950/25 dark:to-orange-950/20",
-    iconBg: "bg-amber-100 dark:bg-amber-900/50",
-    icon: "text-amber-700 dark:text-amber-400",
-    badge: "bg-amber-600 text-white dark:bg-amber-600 dark:text-white",
-    dot: "bg-amber-400",
+    accent: "border-l-yellow-400",
+    headerGradient: "from-yellow-50 to-amber-50 dark:from-yellow-950/20 dark:to-amber-950/15",
+    iconBg: "bg-yellow-100 dark:bg-yellow-900/50",
+    icon: "text-yellow-600 dark:text-yellow-400",
+    badge: "bg-yellow-400 text-yellow-950 dark:bg-yellow-500 dark:text-yellow-950",
+    dot: "bg-yellow-400",
+    prominentShell:
+      "shadow-lg shadow-yellow-500/15 dark:shadow-yellow-900/30 ring-2 ring-yellow-400/30 dark:ring-yellow-500/35 border-yellow-200 dark:border-yellow-900/60",
+    prominentTitle: "text-yellow-900 dark:text-yellow-50",
+    prominentText: "text-yellow-800/80 dark:text-yellow-200/80",
+    prominentBulletin: "text-yellow-900/90 dark:text-yellow-100/90",
   },
   3: {
     label: "Vigilance orange",
     short: "Orange",
-    accent: "border-l-red-500",
-    headerGradient:
-      "from-red-100 via-orange-50 to-red-50 dark:from-red-950/50 dark:via-orange-950/30 dark:to-red-950/40",
-    iconBg: "bg-red-100 dark:bg-red-900/60",
-    icon: "text-red-600 dark:text-red-400",
-    badge: "bg-red-600 text-white dark:bg-red-600 dark:text-white",
-    dot: "bg-red-500",
+    accent: "border-l-orange-500",
+    headerGradient: "from-orange-50 to-amber-50 dark:from-orange-950/20 dark:to-amber-950/15",
+    iconBg: "bg-orange-100 dark:bg-orange-900/50",
+    icon: "text-orange-600 dark:text-orange-400",
+    badge: "bg-orange-500 text-white dark:bg-orange-600 dark:text-white",
+    dot: "bg-orange-500",
+    prominentShell:
+      "shadow-lg shadow-orange-500/15 dark:shadow-orange-900/30 ring-2 ring-orange-500/25 dark:ring-orange-500/35 border-orange-200 dark:border-orange-900/60",
+    prominentTitle: "text-orange-900 dark:text-orange-50",
+    prominentText: "text-orange-800/80 dark:text-orange-200/80",
+    prominentBulletin: "text-orange-900/90 dark:text-orange-100/90",
   },
   4: {
     label: "Alerte rouge",
@@ -83,8 +99,13 @@ const LEVEL_CONFIG: Record<
     headerGradient: "from-red-50 to-rose-50 dark:from-red-950/20 dark:to-rose-950/15",
     iconBg: "bg-red-100 dark:bg-red-900/50",
     icon: "text-red-600 dark:text-red-400",
-    badge: "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300",
+    badge: "bg-red-600 text-white dark:bg-red-600 dark:text-white",
     dot: "bg-red-600",
+    prominentShell:
+      "shadow-lg shadow-red-500/15 dark:shadow-red-900/30 ring-2 ring-red-500/25 dark:ring-red-500/35 border-red-200 dark:border-red-900/60",
+    prominentTitle: "text-red-900 dark:text-red-50",
+    prominentText: "text-red-800/80 dark:text-red-200/80",
+    prominentBulletin: "text-red-900/90 dark:text-red-100/90",
   },
 }
 
@@ -192,8 +213,8 @@ export default function WeatherAlertsCard({
       <div
         className={cn(
           CARD_SHELL,
-          "h-14 animate-pulse border-red-200 dark:border-red-900/50",
-          "bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-950/30 dark:to-orange-950/20"
+          "h-14 animate-pulse border-gray-200 dark:border-gray-700",
+          "bg-gradient-to-r from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900"
         )}
         aria-hidden
       />
@@ -266,8 +287,7 @@ export default function WeatherAlertsCard({
           CARD_SHELL,
           "border-l-4",
           theme.accent,
-          isProminent &&
-            "shadow-lg shadow-red-500/15 dark:shadow-red-900/30 ring-2 ring-red-500/25 dark:ring-red-500/35 border-red-200 dark:border-red-900/60",
+          isProminent && theme.prominentShell,
           className
         )}
       >
@@ -287,7 +307,7 @@ export default function WeatherAlertsCard({
               <h3
                 className={cn(
                   "text-sm font-bold",
-                  isProminent ? "text-red-900 dark:text-red-50" : "text-gray-900 dark:text-gray-100"
+                  isProminent ? theme.prominentTitle : "text-gray-900 dark:text-gray-100"
                 )}
               >
                 Vigilance Météo-France
@@ -304,7 +324,7 @@ export default function WeatherAlertsCard({
             <div
               className={cn(
                 "flex flex-wrap items-center gap-x-2 gap-y-1 text-xs",
-                isProminent ? "text-red-800/80 dark:text-red-200/80" : "text-gray-500 dark:text-gray-400"
+                isProminent ? theme.prominentText : "text-gray-500 dark:text-gray-400"
               )}
             >
               <span>{deptLabel}</span>
@@ -333,7 +353,7 @@ export default function WeatherAlertsCard({
               <p
                 className={cn(
                   "text-xs leading-relaxed",
-                  isProminent ? "text-red-900/90 dark:text-red-100/90" : "text-gray-600 dark:text-gray-400"
+                  isProminent ? theme.prominentBulletin : "text-gray-600 dark:text-gray-400"
                 )}
               >
                 {bulletinText}
