@@ -20,6 +20,9 @@ export default function DailyForecast({ data }: Props) {
     <div className="glass-card p-4">
       <h3 className="text-sm font-semibold tracking-tight mb-3 text-slate-900 dark:text-white">
         Prévisions 10 jours
+        <span className="ml-2 text-[11px] font-normal text-slate-400 dark:text-slate-500 tabular-nums">
+          {Math.round(globalMin)}° → {Math.round(globalMax)}°
+        </span>
       </h3>
       <div>
         {days.map((day, index) => {
@@ -32,9 +35,10 @@ export default function DailyForecast({ data }: Props) {
           return (
             <div
               key={day.date}
-              className={`grid grid-cols-[52px_64px_1fr] sm:grid-cols-[64px_80px_1fr] items-center gap-2 sm:gap-4 py-2 px-2 text-xs rounded-xl hover:bg-slate-500/5 dark:hover:bg-white/5 transition-colors ${
+              className={`fade-up grid grid-cols-[52px_64px_1fr] sm:grid-cols-[64px_80px_1fr] items-center gap-2 sm:gap-4 py-2 px-2 text-xs rounded-xl hover:bg-slate-500/5 dark:hover:bg-white/5 transition-colors ${
                 index !== 0 ? "border-t border-slate-200/60 dark:border-white/5" : ""
               }`}
+              style={{ animationDelay: `${index * 60}ms` }}
             >
               <span className={`capitalize ${
                 index === 0
@@ -60,11 +64,25 @@ export default function DailyForecast({ data }: Props) {
                 <span className="w-7 text-right tabular-nums text-slate-400 dark:text-slate-500">
                   {Math.round(day.temperatureMin)}°
                 </span>
-                <div className="relative flex-1 h-1.5 rounded-full bg-slate-200/70 dark:bg-white/10 overflow-hidden">
+                <div className="relative flex-1 h-1.5 rounded-full bg-slate-200/70 dark:bg-white/10">
+                  {/* Fenêtre min→max révélée en cascade ; le dégradé froid→chaud
+                      couvre toute l'échelle globale, la barre en montre sa portion */}
                   <div
-                    className="absolute inset-y-0 rounded-full bg-gradient-to-r from-cyan-400 via-emerald-400 to-amber-400"
-                    style={{ left: `${left}%`, width: `${width}%` }}
-                  />
+                    className="bar-reveal absolute inset-y-0 rounded-full overflow-hidden"
+                    style={{
+                      left: `${left}%`,
+                      width: `${width}%`,
+                      animationDelay: `${150 + index * 90}ms`,
+                    }}
+                  >
+                    <div
+                      className="absolute inset-y-0 bg-gradient-to-r from-cyan-500 via-emerald-500 to-amber-500 dark:from-cyan-400 dark:via-emerald-400 dark:to-amber-400"
+                      style={{
+                        left: `${(-left * 100) / width}%`,
+                        width: `${10000 / width}%`,
+                      }}
+                    />
+                  </div>
                 </div>
                 <span className="w-7 tabular-nums font-semibold text-slate-900 dark:text-white">
                   {Math.round(day.temperatureMax)}°
