@@ -381,8 +381,8 @@ export default function WeatherAlertsCard({
               {showUpcomingInHeader ? (
                 <span className="text-[11px] text-gray-400 dark:text-gray-500">
                   {horizonsDiffer && alerts.upcoming
-                    ? `· Auj. & ${shortUpcomingLabel(alerts.upcoming.label)}`
-                    : "· Auj. et demain"}
+                    ? `· Aujourd'hui & ${shortUpcomingLabel(alerts.upcoming.label)}`
+                    : "· Aujourd'hui et demain"}
                 </span>
               ) : null}
             </div>
