@@ -20,6 +20,8 @@ type State = {
   forecast: ForecastData | null;
   sunMoon: SunMoonData | null;
   history: HistoryData | null;
+  historyLoading: boolean;
+  historyError: string | null;
   loading: boolean;
   refreshing: boolean;
   currentTime: Date;
@@ -33,6 +35,8 @@ type Action =
   | { type: 'FETCH_START' }
   | { type: 'FETCH_FORECAST_SUCCESS'; payload: { forecast: ForecastData; sunMoon: SunMoonData } }
   | { type: 'FETCH_HISTORY_SUCCESS'; payload: HistoryData }
+  | { type: 'FETCH_HISTORY_ERROR'; payload: string }
+  | { type: 'SET_HISTORY_LOADING'; payload: boolean }
   | { type: 'FETCH_ERROR'; payload: string }
   | { type: 'FETCH_END' }
   | { type: 'SET_TIME'; payload: Date }
@@ -45,6 +49,8 @@ const initialState: State = {
   forecast: null,
   sunMoon: null,
   history: null,
+  historyLoading: false,
+  historyError: null,
   loading: true,
   refreshing: false,
   currentTime: new Date(),
@@ -62,7 +68,11 @@ function reducer(state: State, action: Action): State {
     case 'FETCH_FORECAST_SUCCESS':
       return { ...state, forecast: action.payload.forecast, sunMoon: action.payload.sunMoon };
     case 'FETCH_HISTORY_SUCCESS':
-      return { ...state, history: action.payload };
+      return { ...state, history: action.payload, historyError: null, historyLoading: false };
+    case 'FETCH_HISTORY_ERROR':
+      return { ...state, historyError: action.payload, historyLoading: false };
+    case 'SET_HISTORY_LOADING':
+      return { ...state, historyLoading: action.payload, historyError: null };
     case 'FETCH_ERROR':
       return { ...state, error: action.payload };
     case 'FETCH_END':
@@ -135,11 +145,45 @@ export default function Home() {
     await fetchData();
   };
 
+  const loadHistory = async () => {
+    dispatch({ type: 'SET_HISTORY_LOADING', payload: true });
+    try {
+      const res = await fetch("/api/weather/history");
+      if (res.ok) {
+        const historyData = await res.json();
+        dispatch({ type: 'FETCH_HISTORY_SUCCESS', payload: historyData });
+        return true;
+      }
+      const err = await res.json().catch(() => ({}));
+      dispatch({
+        type: 'FETCH_HISTORY_ERROR',
+        payload: err.error || "Impossible de charger l'historique",
+      });
+      return false;
+    } catch (err) {
+      console.error(err);
+      dispatch({
+        type: 'FETCH_HISTORY_ERROR',
+        payload: "Impossible de charger l'historique",
+      });
+      return false;
+    }
+  };
+
+  const handleOpenHistory = async () => {
+    dispatch({ type: 'SET_SHOW_HISTORY', payload: true });
+    if (!state.history && !state.historyLoading) {
+      await loadHistory();
+    }
+  };
+
   const {
     showSplash,
     forecast,
     sunMoon,
     history,
+    historyLoading,
+    historyError,
     loading,
     refreshing,
     currentTime,
@@ -272,7 +316,7 @@ export default function Home() {
             {/* Bouton historique */}
             <div className="md:col-span-2 lg:col-span-4">
             <button
-              onClick={() => dispatch({ type: 'SET_SHOW_HISTORY', payload: true })}
+              onClick={handleOpenHistory}
               className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors"
             >
               📊 Voir l'historique des 85 années
@@ -282,22 +326,39 @@ export default function Home() {
         </div>
 
       {/* Modal Historique */}
-      {showHistory && history && (
+      {showHistory && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-gray-900 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-xl">
             <div className="sticky top-0 bg-white dark:bg-gray-900 flex items-center justify-between p-4 border-b-2 border-blue-200 dark:border-gray-800">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                Historique du {history.day}
+                {history ? `Historique du ${history.day}` : "Historique météo"}
               </h2>
               <button
                 onClick={() => dispatch({ type: 'SET_SHOW_HISTORY', payload: false })}
                 className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                aria-label="Fermer l'historique"
               >
                 <X size={24} />
               </button>
             </div>
             <div className="p-4">
-              <WeatherHistory data={history} />
+              {historyLoading ? (
+                <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-8">
+                  Chargement de l&apos;historique…
+                </p>
+              ) : historyError ? (
+                <div className="text-center py-8 space-y-3">
+                  <p className="text-sm text-red-600 dark:text-red-400">{historyError}</p>
+                  <button
+                    onClick={loadHistory}
+                    className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                  >
+                    Réessayer
+                  </button>
+                </div>
+              ) : history ? (
+                <WeatherHistory data={history} />
+              ) : null}
             </div>
           </div>
         </div>
