@@ -190,6 +190,13 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Bandeau vigilance — tout en haut, avant le header */}
+      <div className="w-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          <WeatherAlertsCard departments={["68"]} />
+        </div>
+      </div>
+
       {/* HEADER PRINCIPAL - Intégré avec espace pub */}
       <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -237,23 +244,7 @@ export default function Home() {
           </div>
         )}
 
-        {/* Alertes en tête de page */}
-        <div className="mb-4 flex flex-col gap-2.5">
-          <WeatherAlertsCard departments={["68"]} />
-          <AtmoAlert />
-        </div>
-
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-            {/* Météo actuelle - compacte */}
-            <div className="md:col-span-1">
-            {forecast && (
-              <CurrentWeatherCard
-                data={forecast.current}
-                todayMinMax={forecast.todayMinMax}
-              />
-              )}
-            </div>
-
             {/* Soleil & Lune */}
             <div className="md:col-span-1">
               {sunMoon && <SunMoon data={sunMoon} />}
@@ -267,6 +258,19 @@ export default function Home() {
             {/* Prévisions 10 jours */}
             <div className="md:col-span-2 lg:col-span-4">
               {forecast && <DailyForecast data={forecast.daily} />}
+            </div>
+
+            {/* Météo actuelle + qualité de l'air — avant l'historique */}
+            <div className="md:col-span-1">
+              {forecast && (
+                <CurrentWeatherCard
+                  data={forecast.current}
+                  todayMinMax={forecast.todayMinMax}
+                />
+              )}
+            </div>
+            <div className="md:col-span-1 lg:col-span-3">
+              <AtmoAlert />
             </div>
 
             {/* Bouton historique */}
