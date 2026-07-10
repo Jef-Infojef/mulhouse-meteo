@@ -237,6 +237,12 @@ export default function Home() {
           </div>
         )}
 
+        {/* Alertes en tête de page */}
+        <div className="mb-4 flex flex-col gap-2.5">
+          <WeatherAlertsCard departments={["68"]} />
+          <AtmoAlert />
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
             {/* Météo actuelle - compacte */}
             <div className="md:col-span-1">
@@ -261,12 +267,6 @@ export default function Home() {
             {/* Prévisions 10 jours */}
             <div className="md:col-span-2 lg:col-span-4">
               {forecast && <DailyForecast data={forecast.daily} />}
-            </div>
-
-            {/* Alertes : vigilance Météo-France + qualité de l'air */}
-            <div className="md:col-span-2 lg:col-span-4 flex flex-col gap-2.5">
-              <WeatherAlertsCard departments={["68"]} />
-              <AtmoAlert />
             </div>
 
             {/* Bouton historique */}

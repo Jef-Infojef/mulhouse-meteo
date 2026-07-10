@@ -30,7 +30,7 @@ interface WeatherAlertsCardProps {
 }
 
 const CARD_SHELL =
-  "rounded-2xl overflow-hidden shadow-sm border bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800"
+  "rounded-2xl overflow-hidden border bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800"
 
 const LEVEL_CONFIG: Record<
   AlertLevel,
@@ -61,26 +61,28 @@ const LEVEL_CONFIG: Record<
   2: {
     label: "Vigilance jaune",
     short: "Jaune",
-    accent: "border-l-yellow-400",
-    headerGradient: "from-yellow-50 to-amber-50 dark:from-yellow-950/20 dark:to-amber-950/15",
+    accent: "border-l-amber-500",
+    headerGradient:
+      "from-amber-50 via-yellow-50 to-orange-50 dark:from-amber-950/35 dark:via-yellow-950/25 dark:to-orange-950/20",
     headerHover:
-      "hover:from-yellow-100 hover:to-amber-100 dark:hover:from-yellow-950/35 dark:hover:to-amber-950/25",
-    iconBg: "bg-yellow-100 dark:bg-yellow-900/50",
-    icon: "text-yellow-600 dark:text-yellow-400",
-    badge: "bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300",
-    dot: "bg-yellow-400",
+      "hover:from-amber-100 hover:via-yellow-100 hover:to-orange-100 dark:hover:from-amber-950/50 dark:hover:via-yellow-950/40 dark:hover:to-orange-950/30",
+    iconBg: "bg-amber-100 dark:bg-amber-900/50",
+    icon: "text-amber-700 dark:text-amber-400",
+    badge: "bg-amber-600 text-white dark:bg-amber-600 dark:text-white",
+    dot: "bg-amber-400",
   },
   3: {
     label: "Vigilance orange",
     short: "Orange",
-    accent: "border-l-orange-500",
-    headerGradient: "from-orange-50 to-amber-50 dark:from-orange-950/20 dark:to-amber-950/15",
+    accent: "border-l-red-500",
+    headerGradient:
+      "from-red-100 via-orange-50 to-red-50 dark:from-red-950/50 dark:via-orange-950/30 dark:to-red-950/40",
     headerHover:
-      "hover:from-orange-100 hover:to-amber-100 dark:hover:from-orange-950/35 dark:hover:to-amber-950/25",
-    iconBg: "bg-orange-100 dark:bg-orange-900/50",
-    icon: "text-orange-600 dark:text-orange-400",
-    badge: "bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300",
-    dot: "bg-orange-500",
+      "hover:from-red-200 hover:via-orange-100 hover:to-red-100 dark:hover:from-red-950/65 dark:hover:via-orange-950/45 dark:hover:to-red-950/55",
+    iconBg: "bg-red-100 dark:bg-red-900/60",
+    icon: "text-red-600 dark:text-red-400",
+    badge: "bg-red-600 text-white dark:bg-red-600 dark:text-white",
+    dot: "bg-red-500",
   },
   4: {
     label: "Alerte rouge",
@@ -235,9 +237,26 @@ export default function WeatherAlertsCard({
   }, [deptStr])
 
   const alerts = fetchedAlerts ?? initialAlerts
-  const [expanded, setExpanded] = useState(() => alerts?.maxLevel === 4)
+  const [expanded, setExpanded] = useState(false)
 
-  if (loading && !alerts) return null
+  useEffect(() => {
+    if (alerts?.hasActiveAlerts && alerts.maxLevel >= 2) {
+      setExpanded(true)
+    }
+  }, [alerts?.hasActiveAlerts, alerts?.maxLevel])
+
+  if (loading && !alerts) {
+    return (
+      <div
+        className={cn(
+          CARD_SHELL,
+          "h-14 animate-pulse border-red-200 dark:border-red-900/50",
+          "bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-950/30 dark:to-orange-950/20"
+        )}
+        aria-hidden
+      />
+    )
+  }
   if (!alerts) return null
 
   if (alerts.error) {
@@ -290,6 +309,7 @@ export default function WeatherAlertsCard({
   )
 
   const theme = LEVEL_CONFIG[alerts.maxLevel]
+  const isProminent = alerts.hasActiveAlerts && alerts.maxLevel >= 2
   const HeaderIcon: ElementType = alerts.maxLevel === 1 ? CheckCircle2 : AlertTriangle
   const updateTime = new Date(alerts.updateTime).toLocaleTimeString("fr-FR", {
     hour: "2-digit",
@@ -305,14 +325,21 @@ export default function WeatherAlertsCard({
       <m.div
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
-        className={cn(CARD_SHELL, "border-l-4", theme.accent, className)}
+        className={cn(
+          CARD_SHELL,
+          "border-l-4",
+          theme.accent,
+          isProminent &&
+            "shadow-lg shadow-red-500/15 dark:shadow-red-900/30 ring-2 ring-red-500/25 dark:ring-red-500/35 border-red-200 dark:border-red-900/60",
+          className
+        )}
       >
         <button
           type="button"
           onClick={() => canExpand && setExpanded((v) => !v)}
           disabled={!canExpand}
           className={cn(
-            "w-full px-4 py-3 flex items-center gap-3 text-left transition-colors",
+            "w-full px-4 py-3.5 flex items-center gap-3 text-left transition-colors",
             "bg-gradient-to-r",
             theme.headerGradient,
             canExpand && theme.headerHover,
@@ -320,18 +347,30 @@ export default function WeatherAlertsCard({
           )}
         >
           <div className={cn("p-2 rounded-xl shrink-0", theme.iconBg)}>
-            <HeaderIcon className={cn("w-4 h-4", theme.icon)} />
+            <HeaderIcon className={cn("w-5 h-5", theme.icon)} />
           </div>
 
           <div className="flex-1 min-w-0 space-y-1.5">
             <div className="flex flex-wrap items-center gap-2">
-              <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">Vigilance Météo-France</h3>
+              <h3
+                className={cn(
+                  "text-sm font-bold",
+                  isProminent ? "text-red-900 dark:text-red-50" : "text-gray-900 dark:text-gray-100"
+                )}
+              >
+                Vigilance Météo-France
+              </h3>
               <span className={cn("px-2 py-0.5 rounded-md text-[11px] font-bold", theme.badge)}>
                 {alerts.hasActiveAlerts ? theme.label : theme.short}
               </span>
             </div>
 
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
+            <div
+              className={cn(
+                "flex flex-wrap items-center gap-x-2 gap-y-1 text-xs",
+                isProminent ? "text-red-800/80 dark:text-red-200/80" : "text-gray-500 dark:text-gray-400"
+              )}
+            >
               <span>{deptLabel}</span>
               {alerts.hasActiveAlerts && headerPhenomena.length > 0 ? (
                 <>
@@ -374,7 +413,14 @@ export default function WeatherAlertsCard({
           transition={{ duration: 0.2 }}
           className="overflow-hidden"
         >
-          <div className="px-4 pb-4 pt-0 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 space-y-3">
+          <div
+            className={cn(
+              "px-4 pb-4 pt-0 border-t space-y-3",
+              isProminent
+                ? "border-red-200/80 dark:border-red-900/50 bg-red-50/30 dark:bg-red-950/20"
+                : "border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900"
+            )}
+          >
             <div className={cn("grid gap-2 pt-3", alerts.upcoming ? "sm:grid-cols-2" : "grid-cols-1")}>
               <HorizonPanel
                 title="Aujourd'hui"
