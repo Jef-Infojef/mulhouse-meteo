@@ -3,7 +3,9 @@
 import { useState, useEffect } from "react";
 import { AlertTriangle, ExternalLink } from "lucide-react";
 
-const WIDGET_STANDARD_HEIGHT = 450;
+/** Dimensions officielles `.widget_standard` (widget.css Atmo Grand Est) */
+const WIDGET_STANDARD_WIDTH = 320;
+const WIDGET_STANDARD_HEIGHT = 200;
 
 interface Props {
   mode?: "alert" | "compact";
@@ -141,24 +143,28 @@ export default function AtmoAlert({ mode = "alert" }: Props) {
     );
   }
 
-  // Widget standard — carte épousant la taille du widget
+  // Widget standard — carte calée sur les dimensions réelles du widget (320×200)
   return (
-    <div className="w-fit max-w-full rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
+    <div
+      className="inline-block max-w-full overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 leading-none"
+      style={{ width: WIDGET_STANDARD_WIDTH }}
+    >
       {loading ? (
         <div
-          className="animate-pulse bg-gray-100 dark:bg-gray-700 w-full min-w-[280px] sm:min-w-[600px]"
-          style={{ height: WIDGET_STANDARD_HEIGHT }}
+          className="animate-pulse bg-gray-100 dark:bg-gray-700"
+          style={{ width: WIDGET_STANDARD_WIDTH, height: WIDGET_STANDARD_HEIGHT }}
           aria-hidden
         />
       ) : (
         <iframe
           src={`https://services.atmo-grandest.eu/widget/standard/commune/${MULHOUSE_INSEE}`}
           title="Widget qualité de l'air Atmo Grand Est - Mulhouse"
-          width="600"
+          width={WIDGET_STANDARD_WIDTH}
           height={WIDGET_STANDARD_HEIGHT}
           frameBorder="0"
           scrolling="no"
-          className="block max-w-full"
+          className="block"
+          style={{ border: "none" }}
           loading="lazy"
         />
       )}

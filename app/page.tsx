@@ -263,13 +263,9 @@ export default function Home() {
               {forecast && <DailyForecast data={forecast.daily} />}
             </div>
 
-            {/* Soleil & Lune — sous les prévisions par jour */}
-            <div className="md:col-span-1">
+            {/* Soleil & Lune + qualité de l'air — avant l'historique */}
+            <div className="md:col-span-2 lg:col-span-4 flex flex-wrap items-start gap-3">
               {sunMoon && <SunMoon data={sunMoon} />}
-            </div>
-
-            {/* Qualité de l'air — avant l'historique */}
-            <div className="md:col-span-2 lg:col-span-4">
               <AtmoAlert />
             </div>
 
