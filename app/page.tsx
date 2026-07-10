@@ -190,13 +190,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Bandeau vigilance — tout en haut, avant le header */}
-      <div className="w-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <WeatherAlertsCard departments={["68"]} />
-        </div>
-      </div>
-
       {/* HEADER PRINCIPAL - Intégré avec espace pub */}
       <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -245,13 +238,23 @@ export default function Home() {
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-            {/* Soleil & Lune */}
-            <div className="md:col-span-1">
-              {sunMoon && <SunMoon data={sunMoon} />}
+            {/* Vigilance Météo-France — sous le header */}
+            <div className="md:col-span-2 lg:col-span-4">
+              <WeatherAlertsCard departments={["68"]} />
             </div>
 
-            {/* Prévisions horaires */}
-            <div className="md:col-span-2 lg:col-span-2">
+            {/* Météo actuelle (carte bleue) */}
+            <div className="md:col-span-1">
+              {forecast && (
+                <CurrentWeatherCard
+                  data={forecast.current}
+                  todayMinMax={forecast.todayMinMax}
+                />
+              )}
+            </div>
+
+            {/* Prévisions horaires — à côté de la météo actuelle */}
+            <div className="md:col-span-1 lg:col-span-3">
               {forecast && <HourlyForecast data={forecast.hourly} />}
             </div>
 
@@ -260,15 +263,14 @@ export default function Home() {
               {forecast && <DailyForecast data={forecast.daily} />}
             </div>
 
-            {/* Météo actuelle + qualité de l'air — avant l'historique */}
-            <div className="md:col-span-2 lg:col-span-4 flex flex-col sm:flex-row flex-wrap gap-3 items-start">
-              {forecast && (
-                <CurrentWeatherCard
-                  data={forecast.current}
-                  todayMinMax={forecast.todayMinMax}
-                />
-              )}
-              <AtmoAlert mode="widget" />
+            {/* Soleil & Lune — sous les prévisions par jour */}
+            <div className="md:col-span-1">
+              {sunMoon && <SunMoon data={sunMoon} />}
+            </div>
+
+            {/* Qualité de l'air — avant l'historique */}
+            <div className="md:col-span-2 lg:col-span-4">
+              <AtmoAlert />
             </div>
 
             {/* Bouton historique */}

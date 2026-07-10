@@ -2,13 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { AlertTriangle, ExternalLink } from "lucide-react";
-import { cn } from "@/lib/utils";
 
-const WIDGET_SMALL_WIDTH = 300;
-const WIDGET_SMALL_HEIGHT = 180;
+const WIDGET_STANDARD_HEIGHT = 450;
 
 interface Props {
-  mode?: "alert" | "compact" | "widget";
+  mode?: "alert" | "compact";
 }
 
 export default function AtmoAlert({ mode = "alert" }: Props) {
@@ -94,7 +92,7 @@ export default function AtmoAlert({ mode = "alert" }: Props) {
         <div className="flex items-center gap-3 mb-2">
           <AlertTriangle size={20} className={getQualityTextColor(atmoData.level)} />
           <h3 className={`font-bold ${getQualityTextColor(atmoData.level)}`}>
-            Qualité de l'air - {getQualityLabel(atmoData.level)}
+            Qualité de l&apos;air - {getQualityLabel(atmoData.level)}
           </h3>
         </div>
         <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
@@ -113,44 +111,11 @@ export default function AtmoAlert({ mode = "alert" }: Props) {
     );
   }
 
-  if (mode === "widget") {
-    return (
-      <div
-        className={cn(
-          "rounded-xl overflow-hidden border shadow-sm w-fit max-w-full",
-          atmoData?.level
-            ? getQualityColor(atmoData.level)
-            : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
-        )}
-        style={{ maxWidth: WIDGET_SMALL_WIDTH }}
-      >
-        {loading ? (
-          <div
-            className="animate-pulse bg-gray-100 dark:bg-gray-700"
-            style={{ width: WIDGET_SMALL_WIDTH, height: WIDGET_SMALL_HEIGHT }}
-            aria-hidden
-          />
-        ) : (
-          <iframe
-            src={`https://services.atmo-grandest.eu/widget/small/commune/${MULHOUSE_INSEE}`}
-            title="Widget qualité de l'air Atmo Grand Est - Mulhouse"
-            width={WIDGET_SMALL_WIDTH}
-            height={WIDGET_SMALL_HEIGHT}
-            frameBorder="0"
-            scrolling="no"
-            className="block max-w-full"
-            loading="lazy"
-          />
-        )}
-      </div>
-    );
-  }
-
   if (mode === "compact") {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-md dark:shadow-lg border border-gray-200 dark:border-gray-700">
         <h4 className="text-xs font-semibold text-gray-900 dark:text-white mb-2">
-          Qualité de l'air
+          Qualité de l&apos;air
         </h4>
         {atmoData && (
           <div className={`rounded-lg p-2 border ${getQualityColor(atmoData.level)}`}>
@@ -176,19 +141,27 @@ export default function AtmoAlert({ mode = "alert" }: Props) {
     );
   }
 
-  // Mode widget standard (fallback)
+  // Widget standard — carte épousant la taille du widget
   return (
-    <div className="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm w-fit max-w-full">
-      <iframe
-        src={`https://services.atmo-grandest.eu/widget/small/commune/${MULHOUSE_INSEE}`}
-        title="Widget qualité de l'air Atmo Grand Est - Mulhouse"
-        width={WIDGET_SMALL_WIDTH}
-        height={WIDGET_SMALL_HEIGHT}
-        frameBorder="0"
-        scrolling="no"
-        className="block max-w-full"
-        loading="lazy"
-      />
+    <div className="w-fit max-w-full rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
+      {loading ? (
+        <div
+          className="animate-pulse bg-gray-100 dark:bg-gray-700 w-full min-w-[280px] sm:min-w-[600px]"
+          style={{ height: WIDGET_STANDARD_HEIGHT }}
+          aria-hidden
+        />
+      ) : (
+        <iframe
+          src={`https://services.atmo-grandest.eu/widget/standard/commune/${MULHOUSE_INSEE}`}
+          title="Widget qualité de l'air Atmo Grand Est - Mulhouse"
+          width="600"
+          height={WIDGET_STANDARD_HEIGHT}
+          frameBorder="0"
+          scrolling="no"
+          className="block max-w-full"
+          loading="lazy"
+        />
+      )}
     </div>
   );
 }
