@@ -129,6 +129,13 @@ body::before {
   animation: fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+/* ── Gel des animations tant que le splash screen est affiché ─ */
+.anim-hold *,
+.anim-hold *::before,
+.anim-hold *::after {
+  animation-play-state: paused !important;
+}
+
 /* ── Courbe de température (prévisions horaires) ────────────── */
 @keyframes draw-line {
   from {

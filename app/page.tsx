@@ -199,7 +199,7 @@ export default function Home() {
         <SplashScreen onFinish={() => dispatch({ type: 'SET_SPLASH', payload: false })} />
       )}
 
-      <main className="min-h-screen flex flex-col">
+      <main className={`min-h-screen flex flex-col ${showSplash ? "anim-hold" : ""}`}>
       {/* TOP BAR — barre d'infos translucide */}
       <div className="w-full glass-bar border-b py-2 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-2 text-[10px] sm:text-sm font-medium text-slate-600 dark:text-slate-400">

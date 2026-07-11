@@ -2,6 +2,7 @@
 
 import { HourlyForecast as HourlyForecastType } from "@/types/weather";
 import { getWeatherIcon, formatTime } from "@/lib/weather-utils";
+import { useInView } from "@/lib/use-in-view";
 import { Droplets } from "lucide-react";
 
 interface Props {
@@ -37,6 +38,7 @@ function buildSmoothPath(pts: { x: number; y: number }[]): string {
 }
 
 export default function HourlyForecast({ data }: Props) {
+  const { ref, inView } = useInView<HTMLDivElement>();
   const now = new Date();
 
   // Trouver l'index de l'heure actuelle
@@ -76,7 +78,7 @@ export default function HourlyForecast({ data }: Props) {
     0.2 + (1.6 * i) / Math.max(hours.length - 1, 1);
 
   return (
-    <div className="glass-card h-full p-4 flex flex-col">
+    <div ref={ref} className="glass-card h-full p-4 flex flex-col">
       <h3 className="text-sm font-semibold tracking-tight mb-3 text-slate-900 dark:text-white">
         Prévisions horaires
         <span className="ml-2 text-[11px] font-normal text-slate-400 dark:text-slate-500">24 h</span>
@@ -129,8 +131,8 @@ export default function HourlyForecast({ data }: Props) {
               })}
             </div>
 
-            {/* Courbe de température animée */}
-            {points.length > 1 && (
+            {/* Courbe de température animée — montée à l'entrée dans le viewport */}
+            {inView && points.length > 1 && (
               <svg
                 className="absolute left-0 pointer-events-none text-sky-600 dark:text-sky-400"
                 style={{ top: CURVE_TOP_OFFSET }}
