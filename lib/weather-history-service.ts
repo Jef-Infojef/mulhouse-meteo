@@ -1,4 +1,3 @@
-import prisma from "@/lib/prisma"
 import type { HistoryData, HistoryRecord } from "@/types/weather"
 
 const HISTORY_SOURCE_URL =
@@ -42,52 +41,6 @@ function normalizeHistoryData(raw: Record<string, unknown>): HistoryData {
   }
 }
 
-async function fetchHistoryFromPrisma(): Promise<HistoryData | null> {
-  if (!process.env.DATABASE_URL?.trim()) return null
-
-  const now = new Date()
-  const day = now.getDate()
-  const month = now.getMonth() + 1
-
-  const records = await prisma.weatherHistory.findMany({
-    where: {
-      location: { equals: "mulhouse", mode: "insensitive" },
-      day,
-      month,
-    },
-    orderBy: { year: "desc" },
-  })
-
-  if (!records.length) return null
-
-  const timeline: HistoryRecord[] = records.map((r) => ({
-    year: r.year,
-    tempMax: r.tempMax,
-    tempMin: r.tempMin,
-    weatherCode: r.weatherCode,
-  }))
-
-  const sortedByMax = [...timeline].sort((a, b) => b.tempMax - a.tempMax)
-  const sortedByMin = [...timeline].sort((a, b) => a.tempMin - b.tempMin)
-  const avgTempMax = timeline.reduce((sum, r) => sum + r.tempMax, 0) / timeline.length
-  const avgTempMin = timeline.reduce((sum, r) => sum + r.tempMin, 0) / timeline.length
-
-  return {
-    location: "Mulhouse",
-    day: `${day.toString().padStart(2, "0")}/${month.toString().padStart(2, "0")}`,
-    records: {
-      highest: sortedByMax[0] || null,
-      lowest: sortedByMin[0] || null,
-    },
-    averages: {
-      tempMax: Math.round(avgTempMax * 10) / 10,
-      tempMin: Math.round(avgTempMin * 10) / 10,
-    },
-    timeline,
-    totalYearsAnalyzed: timeline.length,
-  }
-}
-
 async function fetchHistoryFromMulhouse68(): Promise<HistoryData> {
   const res = await fetch(HISTORY_SOURCE_URL, {
     headers: { Accept: "application/json" },
@@ -112,12 +65,5 @@ async function fetchHistoryFromMulhouse68(): Promise<HistoryData> {
 }
 
 export async function fetchWeatherHistory(): Promise<HistoryData> {
-  try {
-    const local = await fetchHistoryFromPrisma()
-    if (local) return local
-  } catch (error) {
-    console.warn("[weather-history] Prisma indisponible, fallback mulhouse68:", error)
-  }
-
   return fetchHistoryFromMulhouse68()
 }
